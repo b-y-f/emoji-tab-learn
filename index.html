@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#f4f9fb" />
+    <meta name="description" content="Tap & Read：给宝宝用中英文 Emoji 学习词汇。" />
+    <title>Tap & Read · Emoji 词汇</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="data/emoji-data.js" defer></script>
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <main class="app-card">
+        <section class="learn-panel" aria-labelledby="appTitle">
+          <header class="topbar">
+            <div class="brand-lockup">
+              <div class="brand-mark" aria-hidden="true">☀️</div>
+              <div>
+                <p class="brand-kicker">TAP &amp; READ</p>
+                <h1 id="appTitle">Emoji 小课堂</h1>
+              </div>
+            </div>
+            <div class="topbar-search" role="search">
+              <div class="search-box">
+                <input id="searchInput" type="text" autocomplete="off" spellcheck="false" inputmode="search" enterkeyhint="search" aria-label="搜索 Emoji" placeholder="搜索：猫猫、apple、水杯…" />
+                <button class="clear-search" id="clearSearchButton" type="button" aria-label="清空搜索" hidden>×</button>
+              </div>
+            </div>
+            <div class="topbar-actions">
+              <button class="topbar-icon-button" id="settingsButton" type="button" aria-label="设置学习语言" aria-expanded="false">
+                <span aria-hidden="true">⚙</span>
+              </button>
+            </div>
+          </header>
+
+          <div class="settings-backdrop" id="settingsBackdrop" hidden>
+            <section class="settings-sheet" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+              <div class="settings-header">
+                <div>
+                  <p class="section-kicker">学习设置</p>
+                  <h2 id="settingsTitle">选择学习语言</h2>
+                </div>
+                <button class="settings-close" id="settingsCloseButton" type="button" aria-label="关闭设置">×</button>
+              </div>
+              <p class="settings-subtitle">选择一种或两种语言，Emoji 会按你的选择显示和朗读。</p>
+              <p class="settings-selected" id="activeLanguageSummary">中文 · English</p>
+              <div class="language-picker" aria-label="选择要显示和朗读的语言">
+                <button class="language-option is-active" type="button" data-language="zh" aria-pressed="true">
+                  <span class="language-flag" aria-hidden="true">中</span>
+                  <span class="language-copy">
+                    <strong>中文</strong>
+                    <small>普通话</small>
+                  </span>
+                  <span class="language-check" aria-hidden="true">✓</span>
+                </button>
+                <button class="language-option is-active" type="button" data-language="en" aria-pressed="true">
+                  <span class="language-flag language-flag-en" aria-hidden="true">A</span>
+                  <span class="language-copy">
+                    <strong>English</strong>
+                    <small>English</small>
+                  </span>
+                  <span class="language-check" aria-hidden="true">✓</span>
+                </button>
+              </div>
+            </section>
+          </div>
+
+          <div class="hero-tap-area" id="heroTapArea" role="button" tabindex="0" aria-label="点击朗读当前 Emoji">
+            <div class="hero-visual">
+              <span class="hero-emoji" id="heroEmoji">🍎</span>
+            </div>
+
+            <div class="hero-copy" aria-live="polite">
+              <div class="hero-wordings" id="heroWordings"></div>
+              <p class="speech-note" id="speechNote">点这里听发音</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="explore-panel" aria-labelledby="exploreTitle">
+          <div class="category-row" id="categoryRow" aria-label="Emoji 分类">
+            <button class="category-chip is-active" type="button" data-category="all" aria-pressed="true">
+              <span aria-hidden="true">✨</span> 全部
+            </button>
+            <button class="category-chip" type="button" data-category="people" aria-pressed="false">
+              <span aria-hidden="true">🙂</span> 人和身体
+            </button>
+            <button class="category-chip" type="button" data-category="animals" aria-pressed="false">
+              <span aria-hidden="true">🐻</span> 动物
+            </button>
+            <button class="category-chip" type="button" data-category="food" aria-pressed="false">
+              <span aria-hidden="true">🍓</span> 食物
+            </button>
+            <button class="category-chip" type="button" data-category="travel" aria-pressed="false">
+              <span aria-hidden="true">🚗</span> 出门
+            </button>
+            <button class="category-chip" type="button" data-category="activities" aria-pressed="false">
+              <span aria-hidden="true">⚽</span> 玩一玩
+            </button>
+            <button class="category-chip" type="button" data-category="objects" aria-pressed="false">
+              <span aria-hidden="true">🧸</span> 物品
+            </button>
+            <button class="category-chip" type="button" data-category="symbols" aria-pressed="false">
+              <span aria-hidden="true">💡</span> 符号
+            </button>
+            <button class="category-chip" type="button" data-category="flags" aria-pressed="false">
+              <span aria-hidden="true">🚩</span> 旗帜
+            </button>
+          </div>
+
+          <div class="emoji-grid" id="emojiGrid" aria-busy="true">
+            <div class="grid-loading" id="gridLoading">正在准备 Emoji…</div>
+          </div>
+
+          <button class="load-more-button" id="loadMoreButton" type="button" hidden>
+            继续看更多 <span id="loadMoreLabel"></span>
+          </button>
+
+          <footer class="data-credit">
+            <span>本地学习数据 · 中英文名称和关键词</span>
+            <a href="https://emojibase.dev/" target="_blank" rel="noreferrer">Emojibase</a>
+          </footer>
+        </section>
+      </main>
+    </div>
+
+    <noscript>
+      <div class="noscript-message">请打开浏览器 JavaScript，才能使用搜索和朗读功能。</div>
+    </noscript>
+  </body>
+</html>
