@@ -82,8 +82,6 @@ a:focus-visible {
 }
 
 .section-heading,
-.brand-lockup,
-.active-language-summary,
 .topbar-actions,
 .language-option,
 .category-chip,
@@ -93,13 +91,13 @@ a:focus-visible {
 }
 
 .topbar {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(180px, 1.35fr) auto;
+  display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 
 .topbar-search {
+  flex: 1 1 auto;
   min-width: 0;
 }
 
@@ -113,62 +111,74 @@ a:focus-visible {
 }
 
 .topbar-search .search-box {
-  height: 40px;
-  border-radius: 14px;
+  height: 42px;
+  border-radius: 12px;
 }
 
 .topbar-search .clear-search {
-  flex-basis: 23px;
-  width: 23px;
-  height: 23px;
+  flex-basis: 22px;
+  width: 22px;
+  height: 22px;
 }
 
 .topbar-actions {
+  flex: 0 0 auto;
   justify-content: flex-end;
-  gap: 7px;
 }
 
-.topbar-icon-button {
-  position: relative;
-  display: grid;
-  flex: 0 0 40px;
-  width: 40px;
-  height: 40px;
-  place-items: center;
-  padding: 0;
-  color: var(--ink);
-  font-size: 1.45rem;
-  line-height: 1;
+.search-icon,
+.language-chevron {
+  flex: 0 0 auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.search-icon {
+  width: 17px;
+  height: 17px;
+  color: #8c9da6;
+  stroke-width: 1.7;
+}
+
+.topbar-language-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 78px;
+  height: 42px;
+  padding: 0 11px;
+  color: var(--muted-deep);
+  font-size: 0.72rem;
+  font-weight: 850;
+  letter-spacing: 0.01em;
   cursor: pointer;
-  background: rgba(255, 255, 255, 0.7);
-  border: 1px solid rgba(214, 186, 111, 0.34);
-  border-radius: 14px;
-  box-shadow: 0 6px 14px rgba(170, 122, 30, 0.08);
+  background: rgba(255, 255, 255, 0.58);
+  border: 1px solid rgba(214, 186, 111, 0.28);
+  border-radius: 12px;
+  transition: color 160ms ease, background 160ms ease, border-color 160ms ease, transform 160ms ease;
 }
 
-.topbar-icon-button:active {
+.topbar-language-button:hover,
+.topbar-language-button[aria-expanded="true"] {
+  color: var(--ink);
+  background: #fff;
+  border-color: rgba(35, 103, 209, 0.34);
+}
+
+.topbar-language-button:active {
   transform: translateY(1px) scale(0.97);
 }
 
-.brand-lockup {
-  gap: 10px;
-  min-width: 0;
+.language-chevron {
+  width: 12px;
+  height: 12px;
+  color: #91a0a8;
+  stroke-width: 1.5;
 }
 
-.brand-mark {
-  display: grid;
-  flex: 0 0 42px;
-  width: 42px;
-  height: 42px;
-  place-items: center;
-  font-size: 1.2rem;
-  background: rgba(255, 255, 255, 0.82);
-  border: 1px solid rgba(236, 192, 73, 0.32);
-  border-radius: 15px;
-  box-shadow: 0 8px 16px rgba(170, 122, 30, 0.1);
-}
-
-.brand-kicker,
 .section-kicker {
   margin: 0 0 3px;
   color: #c1842f;
@@ -177,27 +187,10 @@ a:focus-visible {
   letter-spacing: 0.16em;
 }
 
-.brand-lockup h1,
 .section-heading h2 {
   margin: 0;
   font-weight: 850;
   letter-spacing: -0.04em;
-}
-
-.brand-lockup h1 {
-  font-size: 1.15rem;
-}
-
-.active-language-summary {
-  flex: 0 0 auto;
-  min-height: 30px;
-  padding: 6px 10px;
-  color: #6b7477;
-  font-size: 0.72rem;
-  font-weight: 700;
-  background: rgba(255, 255, 255, 0.62);
-  border: 1px solid rgba(214, 186, 111, 0.34);
-  border-radius: 999px;
 }
 
 .settings-backdrop[hidden] {
@@ -292,7 +285,7 @@ a:focus-visible {
 
 .hero-visual::before {
   position: absolute;
-  width: min(58vw, 220px, max(150px, calc(58svh - 200px)));
+  width: min(65vw, 220px, max(150px, calc(58svh - 200px)));
   max-width: 100%;
   aspect-ratio: 1;
   content: "";
@@ -318,7 +311,7 @@ a:focus-visible {
   z-index: 1;
   display: block;
   font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
-  font-size: clamp(6.5rem, 31vw, 10rem);
+  font-size: clamp(9.5rem, 48vw, 15rem);
   line-height: 1;
   filter: drop-shadow(0 11px 8px rgba(155, 107, 31, 0.12));
   transform: translateY(-2%);
@@ -510,7 +503,7 @@ a:focus-visible {
   min-width: 0;
   padding: 0;
   color: var(--ink);
-  font-size: 0.9rem;
+  font-size: 0.86rem;
   background: transparent;
   border: 0;
   outline: 0;
@@ -708,18 +701,6 @@ a:focus-visible {
   background: #fff9dc;
   border: 2px solid #f1bd3f;
   border-radius: 18px;
-}
-
-@media (max-width: 559px) {
-  .topbar {
-    grid-template-columns: minmax(0, 1fr) auto;
-    row-gap: 10px;
-  }
-
-  .topbar-search {
-    grid-column: 1 / -1;
-    grid-row: 2;
-  }
 }
 
 @media (min-width: 560px) {

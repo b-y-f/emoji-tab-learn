@@ -129,6 +129,7 @@ const dom = {
   settingsButton: document.querySelector("#settingsButton"),
   settingsBackdrop: document.querySelector("#settingsBackdrop"),
   settingsCloseButton: document.querySelector("#settingsCloseButton"),
+  topbarLanguageLabel: document.querySelector("#topbarLanguageLabel"),
   speechNote: document.querySelector("#speechNote"),
   activeLanguageSummary: document.querySelector("#activeLanguageSummary"),
   languagePicker: document.querySelector(".language-picker"),
@@ -341,6 +342,10 @@ function activeLanguageText() {
   return state.activeLanguages.map((language) => LANGUAGES[language].label).join(" · ");
 }
 
+function activeLanguageShortText() {
+  return state.activeLanguages.map((language) => language === "zh" ? "中" : "EN").join(" / ");
+}
+
 function selectedLabels(item) {
   return state.activeLanguages.map((language) => item?.labels[language]).filter(Boolean);
 }
@@ -356,6 +361,7 @@ function renderHero() {
     return `<span class="hero-word" lang="${language === "zh" ? "zh-CN" : "en-US"}">${escapeHtml(label)} <small>${escapeHtml(LANGUAGES[language].label)}</small></span>`;
   }).join("");
   dom.activeLanguageSummary.textContent = activeLanguageText();
+  dom.topbarLanguageLabel.textContent = activeLanguageShortText();
 }
 
 function renderLanguagePicker() {

@@ -13,24 +13,24 @@
   <body>
     <div class="app-shell">
       <main class="app-card">
-        <section class="learn-panel" aria-labelledby="appTitle">
+        <section class="learn-panel" aria-label="Emoji 学习区">
           <header class="topbar">
-            <div class="brand-lockup">
-              <div class="brand-mark" aria-hidden="true">☀️</div>
-              <div>
-                <p class="brand-kicker">TAP &amp; READ</p>
-                <h1 id="appTitle">Emoji 小课堂</h1>
-              </div>
-            </div>
             <div class="topbar-search" role="search">
               <div class="search-box">
+                <svg class="search-icon" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+                  <circle cx="8.5" cy="8.5" r="5.5"></circle>
+                  <path d="m13 13 4 4"></path>
+                </svg>
                 <input id="searchInput" type="text" autocomplete="off" spellcheck="false" inputmode="search" enterkeyhint="search" aria-label="搜索 Emoji" placeholder="搜索：猫猫、apple、水杯…" />
                 <button class="clear-search" id="clearSearchButton" type="button" aria-label="清空搜索" hidden>×</button>
               </div>
             </div>
             <div class="topbar-actions">
-              <button class="topbar-icon-button" id="settingsButton" type="button" aria-label="设置学习语言" aria-expanded="false">
-                <span aria-hidden="true">⚙</span>
+              <button class="topbar-language-button" id="settingsButton" type="button" aria-label="设置学习语言" aria-expanded="false">
+                <span id="topbarLanguageLabel" aria-hidden="true">中 / EN</span>
+                <svg class="language-chevron" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+                  <path d="m2.5 4.5 3.5 3 3.5-3"></path>
+                </svg>
               </button>
             </div>
           </header>
@@ -79,7 +79,7 @@
           </div>
         </section>
 
-        <section class="explore-panel" aria-labelledby="exploreTitle">
+        <section class="explore-panel" aria-label="Emoji 浏览区">
           <div class="category-row" id="categoryRow" aria-label="Emoji 分类">
             <button class="category-chip is-active" type="button" data-category="all" aria-pressed="true">
               <span aria-hidden="true">✨</span> 全部
