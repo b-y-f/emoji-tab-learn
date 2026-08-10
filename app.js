@@ -126,6 +126,7 @@ const dom = {
   heroTapArea: document.querySelector("#heroTapArea"),
   heroEmoji: document.querySelector("#heroEmoji"),
   heroWordings: document.querySelector("#heroWordings"),
+  appCard: document.querySelector(".app-card"),
   settingsButton: document.querySelector("#settingsButton"),
   settingsBackdrop: document.querySelector("#settingsBackdrop"),
   settingsCloseButton: document.querySelector("#settingsCloseButton"),
@@ -138,8 +139,6 @@ const dom = {
   categoryRow: document.querySelector("#categoryRow"),
   emojiGrid: document.querySelector("#emojiGrid"),
   gridLoading: document.querySelector("#gridLoading"),
-  loadMoreButton: document.querySelector("#loadMoreButton"),
-  loadMoreLabel: document.querySelector("#loadMoreLabel"),
 };
 
 const state = {
@@ -150,8 +149,6 @@ const state = {
   selectedHexcode: "1F34E",
   category: "all",
   query: "",
-  displayLimit: 96,
-  visibleRecords: [],
   speechRun: 0,
   voices: [],
   isSpeaking: false,
@@ -388,14 +385,9 @@ function cardLabelMarkup(item) {
 }
 
 function renderGrid() {
-  const matches = getVisibleRecords();
-  const isSearching = Boolean(state.query.trim());
-  const records = isSearching ? matches : matches.slice(0, state.displayLimit);
-  state.visibleRecords = records;
+  const records = getVisibleRecords();
   dom.clearSearchButton.hidden = !dom.searchInput.value;
   dom.emojiGrid.setAttribute("aria-busy", "false");
-  dom.loadMoreButton.hidden = isSearching || records.length >= matches.length;
-  dom.loadMoreLabel.textContent = isSearching ? "" : `（已显示 ${records.length}）`;
 
   if (!records.length) {
     dom.emojiGrid.innerHTML = "";
@@ -421,12 +413,20 @@ function setSettingsOpen(isOpen) {
   dom.settingsButton.setAttribute("aria-expanded", String(isOpen));
 }
 
+function updateSelectedCard(previousHexcode, selectedHexcode) {
+  if (previousHexcode) {
+    dom.emojiGrid.querySelector(`[data-hexcode="${previousHexcode}"]`)?.classList.remove("is-selected");
+  }
+  dom.emojiGrid.querySelector(`[data-hexcode="${selectedHexcode}"]`)?.classList.add("is-selected");
+}
+
 function selectEmoji(hexcode, shouldSpeak = true) {
   const item = state.records.find((record) => record.hexcode === hexcode);
   if (!item) return;
+  const previousHexcode = state.selectedHexcode;
   state.selectedHexcode = hexcode;
   renderHero();
-  renderGrid();
+  updateSelectedCard(previousHexcode, hexcode);
   if (shouldSpeak) speakCurrent();
 }
 
@@ -585,20 +585,17 @@ function bindEvents() {
     const button = event.target.closest("[data-category]");
     if (!button) return;
     state.category = button.dataset.category;
-    state.displayLimit = 96;
     renderCategories();
     renderGrid();
   });
 
   dom.searchInput.addEventListener("input", (event) => {
     state.query = event.target.value;
-    state.displayLimit = 96;
     renderGrid();
   });
 
   dom.clearSearchButton.addEventListener("click", () => {
     state.query = "";
-    state.displayLimit = 96;
     dom.searchInput.value = "";
     dom.searchInput.focus();
     renderGrid();
@@ -609,14 +606,36 @@ function bindEvents() {
     if (!card) return;
     selectEmoji(card.dataset.hexcode);
   });
+}
 
-  dom.loadMoreButton.addEventListener("click", () => {
-    state.displayLimit += 96;
-    renderGrid();
+function bindInteractionGuards() {
+  const preventDefault = (event) => event.preventDefault();
+  const preventZoomShortcut = (event) => {
+    if (!event.ctrlKey && !event.metaKey) return;
+    const isZoomKey = ["+", "=", "-", "_", "0"].includes(event.key)
+      || ["NumpadAdd", "NumpadSubtract"].includes(event.code);
+    if (isZoomKey) event.preventDefault();
+  };
+
+  dom.appCard.addEventListener("contextmenu", preventDefault);
+  dom.appCard.addEventListener("dragstart", preventDefault);
+  dom.appCard.addEventListener("selectstart", preventDefault);
+  dom.appCard.addEventListener("dblclick", preventDefault);
+
+  document.addEventListener("keydown", preventZoomShortcut);
+  document.addEventListener("wheel", (event) => {
+    if (event.ctrlKey || event.metaKey) event.preventDefault();
+  }, { passive: false });
+  document.addEventListener("touchmove", (event) => {
+    if (event.touches.length > 1) event.preventDefault();
+  }, { passive: false });
+  ["gesturestart", "gesturechange", "gestureend"].forEach((eventName) => {
+    document.addEventListener(eventName, preventDefault, { passive: false });
   });
 }
 
 async function init() {
+  bindInteractionGuards();
   bindEvents();
   if ("speechSynthesis" in window) {
     refreshVoices();
