@@ -67,6 +67,40 @@ const FEATURED_HEXCODES = [
   "1F9F8",  // teddy bear
 ];
 
+// Short, familiar game names are independent of the browsing dictionary.
+const GAME_WORDS = [
+  ["1F436", "animals", "小狗", "dog"],
+  ["1F431", "animals", "小猫", "cat"],
+  ["1F430", "animals", "兔子", "rabbit"],
+  ["1F42E", "animals", "奶牛", "cow"],
+  ["1F437", "animals", "小猪", "pig"],
+  ["1F98B", "animals", "蝴蝶", "butterfly"],
+  ["1F34E", "food", "苹果", "apple"],
+  ["1F34C", "food", "香蕉", "banana"],
+  ["1F349", "food", "西瓜", "watermelon"],
+  ["1F353", "food", "草莓", "strawberry"],
+  ["1F95B", "food", "牛奶", "milk"],
+  ["1F355", "food", "披萨", "pizza"],
+  ["1F354", "food", "汉堡", "burger"],
+  ["1F36A", "food", "饼干", "cookie"],
+  ["1F33C", "everyday", "花", "flower"],
+  ["1F4A7", "everyday", "水滴", "water drop"],
+  ["2600", "everyday", "太阳", "sun"],
+  ["1F319", "everyday", "月亮", "moon"],
+  ["1F697", "everyday", "汽车", "car"],
+  ["1F68C", "everyday", "公交车", "bus"],
+  ["1F3E0", "everyday", "房子", "house"],
+  ["26BD", "everyday", "球", "ball"],
+  ["1F381", "everyday", "礼物", "gift"],
+  ["1F9F8", "everyday", "玩具熊", "teddy bear"],
+].map(([hexcode, theme, zh, en]) => ({ hexcode, theme, labels: { zh, en } }));
+
+const GAME_PRAISE = [
+  { zh: "找到了！", en: "You found it!" },
+  { zh: "答对啦！", en: "That's right!" },
+  { zh: "真棒！", en: "Great job!" },
+];
+
 const FALLBACK_DATA = {
   en: [
     { hexcode: "1F34E", label: "red apple", tags: ["apple", "fruit"], group: 4, unicode: "🍎" },
@@ -140,6 +174,18 @@ const dom = {
   categoryRow: document.querySelector("#categoryRow"),
   emojiGrid: document.querySelector("#emojiGrid"),
   gridLoading: document.querySelector("#gridLoading"),
+  learnPanel: document.querySelector(".learn-panel"),
+  explorePanel: document.querySelector(".explore-panel"),
+  startGameButton: document.querySelector("#startGameButton"),
+  gamePanel: document.querySelector("#gamePanel"),
+  gameBackButton: document.querySelector("#gameBackButton"),
+  gameLanguagePicker: document.querySelector("#gameLanguagePicker"),
+  gameThemes: document.querySelector("#gameThemes"),
+  gameQuestion: document.querySelector("#gameQuestion"),
+  gameReplayButton: document.querySelector("#gameReplayButton"),
+  gameOptions: document.querySelector("#gameOptions"),
+  gameFeedback: document.querySelector("#gameFeedback"),
+  gameSpeechNote: document.querySelector("#gameSpeechNote"),
 };
 
 const state = {
@@ -151,9 +197,28 @@ const state = {
   category: "all",
   query: "",
   speechRun: 0,
+  speechTimer: null,
+  utterance: null,
   voices: [],
   isSpeaking: false,
   usingFallback: false,
+};
+
+const game = {
+  active: false,
+  language: "zh",
+  theme: "mixed",
+  pools: { mixed: [], animals: [], food: [], everyday: [] },
+  deck: [],
+  question: null,
+  options: [],
+  mistakes: 0,
+  locked: false,
+  feedback: null,
+  run: 0,
+  timers: [],
+  praiseIndex: 0,
+  homeScrollY: 0,
 };
 
 function escapeHtml(value) {
@@ -461,60 +526,336 @@ function getVoice(language) {
 }
 
 function refreshVoices() {
-  if ("speechSynthesis" in window) state.voices = window.speechSynthesis.getVoices();
+  try {
+    state.voices = window.speechSynthesis?.getVoices() || [];
+  } catch {
+    state.voices = [];
+  }
+}
+
+function cancelSpeech() {
+  // Invalidate callbacks before cancel(), which can emit events synchronously.
+  state.speechRun += 1;
+  window.clearTimeout(state.speechTimer);
+  state.speechTimer = null;
+  state.utterance = null;
+  state.isSpeaking = false;
+  try {
+    window.speechSynthesis?.cancel();
+  } catch {
+    // Reading and playing remain available when the speech service fails.
+  }
+}
+
+function speakLabels(labels, { languages = state.activeLanguages, onStart = () => {}, onComplete = () => {}, onError = () => {} } = {}) {
+  cancelSpeech();
+  const run = state.speechRun;
+  const languagesToSpeak = languages.filter((language) => labels[language]);
+  let currentIndex = 0;
+  let finished = false;
+
+  const finish = (error) => {
+    if (run !== state.speechRun || finished) return;
+    finished = true;
+    window.clearTimeout(state.speechTimer);
+    state.speechTimer = null;
+    state.isSpeaking = false;
+    state.utterance = null;
+    if (error) {
+      cancelSpeech();
+      onError(error);
+    } else {
+      onComplete();
+    }
+  };
+
+  const speakNext = () => {
+    if (run !== state.speechRun || finished) return;
+    if (currentIndex >= languagesToSpeak.length) {
+      finish();
+      return;
+    }
+
+    const language = languagesToSpeak[currentIndex++];
+    try {
+      const utterance = new window.SpeechSynthesisUtterance(labels[language]);
+      utterance.lang = LANGUAGES[language].voice;
+      utterance.rate = language === "zh" ? 0.92 : 0.9;
+      utterance.pitch = 1;
+      utterance.volume = 1;
+      const voice = getVoice(language);
+      if (voice) utterance.voice = voice;
+      let settled = false;
+      utterance.onend = () => {
+        if (settled || run !== state.speechRun || finished) return;
+        settled = true;
+        speakNext();
+      };
+      utterance.onerror = (event) => {
+        if (settled || run !== state.speechRun || finished) return;
+        settled = true;
+        finish(event.error || "failed");
+      };
+      state.utterance = utterance;
+      onStart(labels[language]);
+      window.speechSynthesis.speak(utterance);
+    } catch {
+      finish("failed");
+    }
+  };
+
+  if (!window.speechSynthesis || !("SpeechSynthesisUtterance" in window)) {
+    finish("unavailable");
+    return;
+  }
+  refreshVoices();
+  state.isSpeaking = true;
+  state.speechTimer = window.setTimeout(() => finish("timeout"), 10000);
+  try {
+    window.speechSynthesis.resume();
+    speakNext();
+  } catch {
+    finish("failed");
+  }
 }
 
 function speakCurrent() {
   const item = getCurrentRecord();
-  if (!item) return;
-  if (!("speechSynthesis" in window) || !("SpeechSynthesisUtterance" in window)) {
-    setNotice("这个浏览器暂时不支持朗读，可以换 Safari 或 Chrome 试试。 ");
+  if (!item || game.active) return;
+  speakLabels(item.labels, {
+    onStart: (label) => setNotice(`正在读：${label}`),
+    onComplete: () => setNotice("再点一下，就会再读一遍。 "),
+    onError: (error) => setNotice(error === "unavailable"
+      ? "这个浏览器暂时不支持朗读，可以换 Safari 或 Chrome 试试。 "
+      : "朗读没有成功，再点一下试试。 "),
+  });
+}
+
+function prepareGamePools() {
+  const available = new Map(state.records.map((item) => [item.hexcode, item]));
+  const words = GAME_WORDS.filter((word) => {
+    const item = available.get(word.hexcode);
+    return item?.emoji && item.emoji !== "❔";
+  }).map((word) => ({ ...word, emoji: available.get(word.hexcode).emoji }));
+  Object.keys(game.pools).forEach((theme) => {
+    game.pools[theme] = words.filter((word) => theme === "mixed" || word.theme === theme);
+  });
+  dom.startGameButton.disabled = game.pools.mixed.length < 3;
+  renderGameThemes();
+}
+
+function shuffled(items) {
+  const result = [...items];
+  for (let index = result.length - 1; index > 0; index -= 1) {
+    const other = Math.floor(Math.random() * (index + 1));
+    [result[index], result[other]] = [result[other], result[index]];
+  }
+  return result;
+}
+
+function gameLanguageMarkup(labels, className) {
+  return `<span class="${className}" lang="${LANGUAGES[game.language].voice}">${escapeHtml(labels[game.language])}</span>`;
+}
+
+function renderGameFeedback() {
+  dom.gameFeedback.innerHTML = game.feedback ? gameLanguageMarkup(game.feedback, "game-feedback-line") : "";
+  dom.gameFeedback.classList.toggle("is-success", game.locked);
+}
+
+function renderGameText() {
+  dom.gameLanguagePicker.querySelectorAll('input[name="game-language"]').forEach((input) => {
+    input.checked = input.value === game.language;
+  });
+  dom.gameQuestion.innerHTML = gameLanguageMarkup(gameQuestionLabels(), "game-question-line");
+  dom.gameOptions.querySelectorAll("[data-game-hexcode]").forEach((button) => {
+    const word = game.options.find((option) => option.hexcode === button.dataset.gameHexcode);
+    button.setAttribute("aria-label", word.labels[game.language]);
+    button.lang = LANGUAGES[game.language].voice;
+  });
+  renderGameFeedback();
+}
+
+function renderGameThemes() {
+  dom.gameThemes.querySelectorAll("[data-game-theme]").forEach((button) => {
+    const theme = button.dataset.gameTheme;
+    const active = theme === game.theme;
+    button.disabled = game.pools[theme].length < 3;
+    button.classList.toggle("is-active", active);
+    button.setAttribute("aria-pressed", String(active));
+  });
+}
+
+function cancelGameActivity() {
+  game.run += 1;
+  game.timers.forEach((timer) => window.clearTimeout(timer));
+  game.timers = [];
+  cancelSpeech();
+}
+
+function speakGame(labels, onComplete = () => {}) {
+  const run = game.run;
+  dom.gameSpeechNote.hidden = true;
+  speakLabels(labels, {
+    languages: [game.language],
+    onComplete: () => {
+      if (game.active && run === game.run) onComplete();
+    },
+    onError: () => {
+      if (!game.active || run !== game.run) return;
+      dom.gameSpeechNote.textContent = {
+        zh: "暂时没有声音，家长可以读题，继续点选哦。",
+        en: "No sound right now. A grown-up can read the question.",
+      }[game.language];
+      dom.gameSpeechNote.lang = LANGUAGES[game.language].voice;
+      dom.gameSpeechNote.hidden = false;
+      onComplete();
+    },
+  });
+}
+
+function gameQuestionLabels() {
+  return {
+    zh: `${game.question.labels.zh}在哪里？`,
+    en: `Find the ${game.question.labels.en}!`,
+  };
+}
+
+function nextGameQuestion() {
+  const pool = game.pools[game.theme];
+  if (!game.active || pool.length < 3) return;
+  cancelGameActivity();
+  if (!game.deck.length) {
+    game.deck = shuffled(pool);
+    // Keep every word in the new round, while avoiding a repeated boundary.
+    if (game.deck[0].hexcode === game.question?.hexcode) {
+      const other = 1 + Math.floor(Math.random() * (game.deck.length - 1));
+      [game.deck[0], game.deck[other]] = [game.deck[other], game.deck[0]];
+    }
+  }
+  game.question = game.deck.shift();
+  const distractors = shuffled(pool.filter((word) => word.hexcode !== game.question.hexcode)).slice(0, 2);
+  game.options = shuffled([game.question, ...distractors]);
+  game.mistakes = 0;
+  game.locked = false;
+  game.feedback = null;
+  dom.gameOptions.innerHTML = game.options.map((word) =>
+    `<button class="game-option" type="button" data-game-hexcode="${word.hexcode}">
+      <span class="game-option-emoji" aria-hidden="true">${escapeHtml(word.emoji)}</span>
+    </button>`
+  ).join("");
+  renderGameText();
+  speakGame(gameQuestionLabels());
+}
+
+function enterGame() {
+  if (game.active || game.pools.mixed.length < 3) return;
+  game.homeScrollY = window.scrollY;
+  game.active = true;
+  game.theme = "mixed";
+  game.deck = [];
+  game.question = null;
+  setSettingsOpen(false);
+  dom.learnPanel.hidden = true;
+  dom.explorePanel.hidden = true;
+  dom.gamePanel.hidden = false;
+  renderGameThemes();
+  nextGameQuestion();
+  window.scrollTo(0, 0);
+  dom.gameReplayButton.focus({ preventScroll: true });
+}
+
+function exitGame() {
+  if (!game.active) return;
+  game.active = false;
+  cancelGameActivity();
+  dom.gamePanel.hidden = true;
+  dom.learnPanel.hidden = false;
+  dom.explorePanel.hidden = false;
+  setNotice("点这里听发音");
+  dom.startGameButton.focus({ preventScroll: true });
+  window.scrollTo(0, game.homeScrollY);
+}
+
+function changeGameTheme(theme) {
+  if (!game.active || theme === game.theme || !game.pools[theme] || game.pools[theme].length < 3) return;
+  game.theme = theme;
+  game.deck = [];
+  renderGameThemes();
+  nextGameQuestion();
+}
+
+function changeGameLanguage(language) {
+  if (!game.active || language === game.language || !["zh", "en"].includes(language)) return;
+  cancelGameActivity();
+  game.language = language;
+  renderGameText();
+  if (game.locked) {
+    continueGameAfterSpeech((done) => speakGame(game.feedback, done));
+  } else {
+    speakGame(gameQuestionLabels());
+  }
+}
+
+function continueGameAfterSpeech(speak) {
+  const run = game.run;
+  let minimumElapsed = false;
+  let speechFinished = false;
+  const advance = () => {
+    if (game.active && game.locked && run === game.run) nextGameQuestion();
+  };
+  // Set both timers before speaking: missing speech can finish synchronously.
+  game.timers = [
+    window.setTimeout(() => {
+      minimumElapsed = true;
+      if (speechFinished) advance();
+    }, 1200),
+    window.setTimeout(advance, 4000),
+  ];
+  speak(() => {
+    speechFinished = true;
+    if (minimumElapsed) advance();
+  });
+}
+
+function replayGameQuestion() {
+  if (!game.active || !game.question) return;
+  cancelGameActivity();
+  if (game.locked) {
+    // Replaying during praise keeps the answer locked and replaces its timers.
+    continueGameAfterSpeech((done) => speakGame(gameQuestionLabels(), done));
+  } else {
+    speakGame(gameQuestionLabels());
+  }
+}
+
+function answerGame(hexcode) {
+  if (!game.active || game.locked || !game.options.some((word) => word.hexcode === hexcode)) return;
+  if (hexcode !== game.question.hexcode) {
+    game.mistakes += 1;
+    const retry = { zh: "再找找", en: "Try again!" };
+    game.feedback = retry;
+    renderGameFeedback();
+    if (game.mistakes === 2) {
+      dom.gameOptions.querySelector(`[data-game-hexcode="${game.question.hexcode}"]`).classList.add("is-hint");
+    }
+    speakGame(retry);
     return;
   }
 
-  refreshVoices();
-  const run = ++state.speechRun;
-  const languagesToSpeak = state.activeLanguages.filter((language) => item.labels[language]);
-  let currentIndex = 0;
-  window.speechSynthesis.cancel();
-  state.isSpeaking = true;
-  renderHero();
-
-  const speakNext = () => {
-    if (run !== state.speechRun || currentIndex >= languagesToSpeak.length) {
-      if (run === state.speechRun) {
-        state.isSpeaking = false;
-        renderHero();
-        setNotice("再点一下，就会再读一遍。 ");
-      }
-      return;
-    }
-
-    const language = languagesToSpeak[currentIndex];
-    const label = item.labels[language];
-    const utterance = new SpeechSynthesisUtterance(label);
-    utterance.lang = LANGUAGES[language].voice;
-    utterance.rate = language === "zh" ? 0.92 : 0.9;
-    utterance.pitch = 1;
-    utterance.volume = 1;
-    const voice = getVoice(language);
-    if (voice) utterance.voice = voice;
-    setNotice(`正在读：${label}`);
-    currentIndex += 1;
-    utterance.onend = speakNext;
-    utterance.onerror = (event) => {
-      if (event.error === "canceled" || event.error === "interrupted") return;
-      if (run === state.speechRun) {
-        state.isSpeaking = false;
-        renderHero();
-        setNotice("朗读没有成功，再点一下试试。 ");
-      }
-    };
-    window.speechSynthesis.speak(utterance);
-  };
-
-  window.speechSynthesis.resume();
-  speakNext();
+  // Lock before any speech or animation can dispatch another event.
+  game.locked = true;
+  cancelGameActivity();
+  dom.gameOptions.querySelectorAll(".game-option").forEach((button) => {
+    button.disabled = true;
+    button.classList.remove("is-hint");
+  });
+  const selected = dom.gameOptions.querySelector(`[data-game-hexcode="${hexcode}"]`);
+  selected.classList.add("is-correct");
+  selected.insertAdjacentHTML("beforeend", '<span class="game-stars" aria-hidden="true"><span>✦</span><span>✦</span><span>✦</span></span>');
+  const praise = GAME_PRAISE[game.praiseIndex++ % GAME_PRAISE.length];
+  game.feedback = praise;
+  renderGameFeedback();
+  continueGameAfterSpeech((done) => speakGame(praise, done));
 }
 
 async function loadDatasets() {
@@ -542,6 +883,22 @@ async function loadDatasets() {
 }
 
 function bindEvents() {
+  dom.startGameButton.addEventListener("click", enterGame);
+  dom.gameBackButton.addEventListener("click", exitGame);
+  dom.gameReplayButton.addEventListener("click", replayGameQuestion);
+  dom.gameLanguagePicker.addEventListener("change", (event) => {
+    const input = event.target.closest('input[name="game-language"]');
+    if (input?.checked) changeGameLanguage(input.value);
+  });
+  dom.gameThemes.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-game-theme]");
+    if (button && !button.disabled) changeGameTheme(button.dataset.gameTheme);
+  });
+  dom.gameOptions.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-game-hexcode]");
+    if (button && !button.disabled) answerGame(button.dataset.gameHexcode);
+  });
+
   dom.heroTapArea.addEventListener("click", () => speakCurrent());
   dom.heroTapArea.addEventListener("keydown", (event) => {
     if (event.key !== "Enter" && event.key !== " ") return;
@@ -559,6 +916,7 @@ function bindEvents() {
   });
   document.addEventListener("keydown", (event) => {
     if (event.key !== "Escape") return;
+    if (game.active) exitGame();
     setSettingsOpen(false);
   });
 
@@ -575,9 +933,7 @@ function bindEvents() {
     } else {
       state.activeLanguages.push(language);
     }
-    window.speechSynthesis?.cancel();
-    state.speechRun += 1;
-    state.isSpeaking = false;
+    cancelSpeech();
     renderLanguagePicker();
     renderHero();
     renderGrid();
@@ -650,6 +1006,7 @@ async function init() {
   renderCategories();
   renderHero();
   renderGrid();
+  prepareGamePools();
   if (state.usingFallback) {
     setNotice("完整词库加载失败，当前使用内置词汇；请检查 data 文件是否完整。 ");
   }

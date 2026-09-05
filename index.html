@@ -35,6 +35,10 @@
             </div>
           </header>
 
+          <div class="home-game-entry">
+            <button class="start-game-button" id="startGameButton" type="button" disabled>🎯 找一找</button>
+          </div>
+
           <div class="settings-backdrop" id="settingsBackdrop" hidden>
             <section class="settings-sheet" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
               <div class="settings-header">
@@ -126,6 +130,43 @@
             <span>本地学习数据 · 中英文名称和关键词</span>
             <a href="https://emojibase.dev/" target="_blank" rel="noreferrer">Emojibase</a>
           </footer>
+        </section>
+
+        <section class="game-panel" id="gamePanel" aria-labelledby="gameTitle" hidden>
+          <header class="game-header">
+            <button class="game-back-button" id="gameBackButton" type="button">← 返回</button>
+            <div class="game-heading">
+              <p class="section-kicker">听一听 · 找一找</p>
+              <h1 id="gameTitle">找一找</h1>
+            </div>
+          </header>
+
+          <div class="game-language-picker" id="gameLanguagePicker" role="radiogroup" aria-labelledby="gameLanguageCaption">
+            <span class="game-language-caption" id="gameLanguageCaption">题目与语音</span>
+            <div class="game-language-options">
+              <input id="gameLanguageZh" type="radio" name="game-language" value="zh" checked />
+              <label for="gameLanguageZh">中文</label>
+              <input id="gameLanguageEn" type="radio" name="game-language" value="en" />
+              <label for="gameLanguageEn">English</label>
+            </div>
+          </div>
+
+          <div class="game-themes" id="gameThemes" aria-label="选择找一找主题">
+            <button class="game-theme-button" type="button" data-game-theme="mixed" aria-pressed="true">混合</button>
+            <button class="game-theme-button" type="button" data-game-theme="animals" aria-pressed="false">动物</button>
+            <button class="game-theme-button" type="button" data-game-theme="food" aria-pressed="false">吃喝</button>
+            <button class="game-theme-button" type="button" data-game-theme="everyday" aria-pressed="false">生活与玩具</button>
+          </div>
+
+          <div class="game-round">
+            <div class="game-question" id="gameQuestion" aria-live="polite"></div>
+            <button class="game-replay-button" id="gameReplayButton" type="button">🔊 再听一次</button>
+
+            <div class="game-options" id="gameOptions" aria-label="选择答案"></div>
+
+            <div class="game-feedback" id="gameFeedback" role="status" aria-live="polite" aria-atomic="true"></div>
+            <p class="game-speech-note" id="gameSpeechNote" role="status" hidden></p>
+          </div>
         </section>
       </main>
     </div>
