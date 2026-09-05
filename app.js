@@ -125,6 +125,7 @@ const FALLBACK_DATA = {
 const dom = {
   heroTapArea: document.querySelector("#heroTapArea"),
   heroEmoji: document.querySelector("#heroEmoji"),
+  heroYoutubeLink: document.querySelector("#heroYoutubeLink"),
   heroWordings: document.querySelector("#heroWordings"),
   appCard: document.querySelector(".app-card"),
   settingsButton: document.querySelector("#settingsButton"),
@@ -353,6 +354,8 @@ function renderHero() {
 
   dom.heroEmoji.textContent = item.emoji;
   dom.heroTapArea.setAttribute("aria-label", `点击朗读 ${selectedLabels(item).join(" / ")}`);
+  dom.heroYoutubeLink.href = `https://www.youtube.com/results?search_query=${encodeURIComponent(item.labels.en)}`;
+  dom.heroYoutubeLink.setAttribute("aria-label", `在 YouTube 搜索 ${item.labels.en}`);
   dom.heroWordings.innerHTML = state.activeLanguages.map((language) => {
     const label = item.labels[language];
     return `<span class="hero-word" lang="${language === "zh" ? "zh-CN" : "en-US"}">${escapeHtml(label)} <small>${escapeHtml(LANGUAGES[language].label)}</small></span>`;

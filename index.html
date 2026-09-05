@@ -67,15 +67,23 @@
             </section>
           </div>
 
-          <div class="hero-tap-area" id="heroTapArea" role="button" tabindex="0" aria-label="点击朗读当前 Emoji">
-            <div class="hero-visual">
-              <span class="hero-emoji" id="heroEmoji">🍎</span>
+          <div class="hero-stage">
+            <div class="hero-tap-area" id="heroTapArea" role="button" tabindex="0" aria-label="点击朗读当前 Emoji">
+              <div class="hero-visual">
+                <span class="hero-emoji" id="heroEmoji">🍎</span>
+              </div>
+
+              <div class="hero-copy" aria-live="polite">
+                <div class="hero-wordings" id="heroWordings"></div>
+                <p class="speech-note" id="speechNote">点这里听发音</p>
+              </div>
             </div>
 
-            <div class="hero-copy" aria-live="polite">
-              <div class="hero-wordings" id="heroWordings"></div>
-              <p class="speech-note" id="speechNote">点这里听发音</p>
-            </div>
+            <a class="hero-youtube-link" id="heroYoutubeLink" href="https://www.youtube.com/results?search_query=red%20apple" target="_blank" rel="noreferrer" aria-label="在 YouTube 搜索 red apple">
+              <svg viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+                <path d="M7.5 6.1 13.7 10l-6.2 3.9V6.1Z"></path>
+              </svg>
+            </a>
           </div>
         </section>
 

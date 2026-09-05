@@ -267,9 +267,16 @@ a:focus-visible {
   font-weight: 800;
 }
 
-.hero-tap-area {
+.hero-stage {
+  position: relative;
   display: flex;
   flex: 1 1 auto;
+  min-height: 0;
+}
+
+.hero-tap-area {
+  display: flex;
+  width: 100%;
   min-height: 0;
   flex-direction: column;
   cursor: pointer;
@@ -321,6 +328,42 @@ a:focus-visible {
   line-height: 1;
   filter: drop-shadow(0 11px 8px rgba(155, 107, 31, 0.12));
   transform: translateY(-2%);
+}
+
+.hero-youtube-link {
+  position: absolute;
+  top: 44%;
+  left: calc(50% + clamp(92px, 22vw, 132px));
+  z-index: 2;
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  color: #8c7961;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(178, 145, 77, 0.28);
+  border-radius: 9px;
+  box-shadow: 0 4px 12px rgba(136, 93, 28, 0.1);
+  transform: translateY(-50%);
+  transition: color 160ms ease, background 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.hero-youtube-link:hover {
+  color: #5f4e38;
+  background: #fff;
+  border-color: rgba(35, 103, 209, 0.34);
+  box-shadow: 0 5px 14px rgba(82, 76, 63, 0.14);
+}
+
+.hero-youtube-link:active {
+  transform: translateY(calc(-50% + 1px));
+}
+
+.hero-youtube-link svg {
+  width: 15px;
+  height: 15px;
+  fill: currentColor;
 }
 
 .hero-copy {
