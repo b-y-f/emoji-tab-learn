@@ -151,11 +151,31 @@
             </div>
           </div>
 
-          <div class="game-themes" id="gameThemes" aria-label="选择找一找主题">
-            <button class="game-theme-button" type="button" data-game-theme="mixed" aria-pressed="true">混合</button>
-            <button class="game-theme-button" type="button" data-game-theme="animals" aria-pressed="false">动物</button>
-            <button class="game-theme-button" type="button" data-game-theme="food" aria-pressed="false">吃喝</button>
-            <button class="game-theme-button" type="button" data-game-theme="everyday" aria-pressed="false">生活与玩具</button>
+          <div class="game-controls-row">
+            <label class="game-theme-picker" for="gameThemeSelect">
+              <span class="game-control-caption">主题</span>
+              <select id="gameThemeSelect">
+                <option value="mixed">混合</option>
+                <option value="animals">动物</option>
+                <option value="ocean">海洋</option>
+                <option value="produce">果蔬</option>
+                <option value="food">吃喝</option>
+                <option value="transport">交通</option>
+                <option value="nature">自然</option>
+                <option value="home">家居衣物</option>
+                <option value="play">玩乐</option>
+              </select>
+            </label>
+
+            <div class="game-mode-picker" id="gameModePicker" role="radiogroup" aria-labelledby="gameModeCaption">
+              <span class="game-control-caption" id="gameModeCaption">玩法</span>
+              <div class="game-mode-options">
+                <input id="gameModeName" type="radio" name="game-mode" value="name" checked />
+                <label for="gameModeName">认一认</label>
+                <input id="gameModeThink" type="radio" name="game-mode" value="think" />
+                <label for="gameModeThink">想一想</label>
+              </div>
+            </div>
           </div>
 
           <div class="game-round">

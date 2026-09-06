@@ -68,32 +68,305 @@ const FEATURED_HEXCODES = [
 ];
 
 // Short, familiar game names are independent of the browsing dictionary.
+const GAME_THEMES = ["animals", "ocean", "produce", "food", "transport", "nature", "home", "play"];
+
 const GAME_WORDS = [
   ["1F436", "animals", "小狗", "dog"],
   ["1F431", "animals", "小猫", "cat"],
   ["1F430", "animals", "兔子", "rabbit"],
   ["1F42E", "animals", "奶牛", "cow"],
   ["1F437", "animals", "小猪", "pig"],
+  ["1F434", "animals", "马", "horse"],
+  ["1F42D", "animals", "老鼠", "mouse"],
   ["1F98B", "animals", "蝴蝶", "butterfly"],
-  ["1F34E", "food", "苹果", "apple"],
-  ["1F34C", "food", "香蕉", "banana"],
-  ["1F349", "food", "西瓜", "watermelon"],
-  ["1F353", "food", "草莓", "strawberry"],
-  ["1F95B", "food", "牛奶", "milk"],
+  ["1F43B", "animals", "棕熊", "brown bear"],
+  ["1F43C", "animals", "熊猫", "panda"],
+  ["1F428", "animals", "考拉", "koala"],
+  ["1F981", "animals", "狮子", "lion"],
+  ["1F420", "ocean", "热带鱼", "tropical fish"],
+  ["1F42C", "ocean", "海豚", "dolphin"],
+  ["1F433", "ocean", "鲸鱼", "whale"],
+  ["1F988", "ocean", "鲨鱼", "shark"],
+  ["1F419", "ocean", "章鱼", "octopus"],
+  ["1F991", "ocean", "乌贼", "squid"],
+  ["1F980", "ocean", "螃蟹", "crab"],
+  ["1F99E", "ocean", "龙虾", "lobster"],
+  ["1F990", "ocean", "虾", "shrimp"],
+  ["1F9AD", "ocean", "海豹", "seal"],
+  ["1FABC", "ocean", "水母", "jellyfish"],
+  ["1FAB8", "ocean", "珊瑚", "coral"],
+  ["1F34E", "produce", "苹果", "apple"],
+  ["1F34C", "produce", "香蕉", "banana"],
+  ["1F349", "produce", "西瓜", "watermelon"],
+  ["1F353", "produce", "草莓", "strawberry"],
+  ["1F347", "produce", "葡萄", "grapes"],
+  ["1F34D", "produce", "菠萝", "pineapple"],
+  ["1F955", "produce", "胡萝卜", "carrot"],
+  ["1F33D", "produce", "玉米", "corn"],
+  ["1F966", "produce", "西兰花", "broccoli"],
+  ["1F345", "produce", "西红柿", "tomato"],
+  ["1F954", "produce", "土豆", "potato"],
+  ["1F346", "produce", "茄子", "eggplant"],
   ["1F355", "food", "披萨", "pizza"],
   ["1F354", "food", "汉堡", "burger"],
+  ["1F35F", "food", "薯条", "fries"],
+  ["1F32D", "food", "热狗", "hot dog"],
+  ["1F32F", "food", "卷饼", "burrito"],
+  ["1F96A", "food", "三明治", "sandwich"],
+  ["1F363", "food", "寿司", "sushi"],
+  ["1F35C", "food", "面条", "noodles"],
   ["1F36A", "food", "饼干", "cookie"],
-  ["1F33C", "everyday", "花", "flower"],
-  ["1F4A7", "everyday", "水滴", "water drop"],
-  ["2600", "everyday", "太阳", "sun"],
-  ["1F319", "everyday", "月亮", "moon"],
-  ["1F697", "everyday", "汽车", "car"],
-  ["1F68C", "everyday", "公交车", "bus"],
-  ["1F3E0", "everyday", "房子", "house"],
-  ["26BD", "everyday", "球", "ball"],
-  ["1F381", "everyday", "礼物", "gift"],
-  ["1F9F8", "everyday", "玩具熊", "teddy bear"],
+  ["1F366", "food", "冰淇淋", "ice cream"],
+  ["1F95B", "food", "牛奶", "milk"],
+  ["1F9C3", "food", "果汁盒", "juice box"],
+  ["1F697", "transport", "汽车", "car"],
+  ["1F695", "transport", "出租车", "taxi"],
+  ["1F68C", "transport", "公交车", "bus"],
+  ["1F69A", "transport", "货车", "truck"],
+  ["1F69C", "transport", "拖拉机", "tractor"],
+  ["1F6B2", "transport", "自行车", "bicycle"],
+  ["1F6F4", "transport", "滑板车", "scooter"],
+  ["1F3CD", "transport", "摩托车", "motorcycle"],
+  ["1F682", "transport", "火车", "train"],
+  ["2708", "transport", "飞机", "airplane"],
+  ["1F681", "transport", "直升机", "helicopter"],
+  ["1F6A2", "transport", "轮船", "ship"],
+  ["2600", "nature", "太阳", "sun"],
+  ["1F319", "nature", "月亮", "moon"],
+  ["2601", "nature", "云", "cloud"],
+  ["1F308", "nature", "彩虹", "rainbow"],
+  ["2744", "nature", "雪花", "snowflake"],
+  ["1F30A", "nature", "浪花", "wave"],
+  ["1F30B", "nature", "火山", "volcano"],
+  ["1F333", "nature", "树", "tree"],
+  ["1F33C", "nature", "花", "flower"],
+  ["1F335", "nature", "仙人掌", "cactus"],
+  ["1F344", "nature", "蘑菇", "mushroom"],
+  ["1F4A7", "nature", "水滴", "water drop"],
+  ["1F3E0", "home", "房子", "house"],
+  ["1FA91", "home", "椅子", "chair"],
+  ["1F6CF", "home", "床", "bed"],
+  ["1F6C1", "home", "浴缸", "bathtub"],
+  ["1F511", "home", "钥匙", "key"],
+  ["1F4A1", "home", "灯泡", "light bulb"],
+  ["1F455", "home", "T恤", "T-shirt"],
+  ["1F456", "home", "牛仔裤", "jeans"],
+  ["1F457", "home", "连衣裙", "dress"],
+  ["1F45F", "home", "鞋", "shoe"],
+  ["1F9E2", "home", "帽子", "hat"],
+  ["1F392", "home", "书包", "backpack"],
+  ["1F9F8", "play", "玩具熊", "teddy bear"],
+  ["1FA80", "play", "悠悠球", "yo-yo"],
+  ["1FA81", "play", "风筝", "kite"],
+  ["1F9E9", "play", "拼图", "puzzle"],
+  ["1F3C0", "play", "篮球", "basketball"],
+  ["26BD", "play", "足球", "soccer ball"],
+  ["1F381", "play", "礼物", "gift"],
+  ["1F3BE", "play", "网球", "tennis ball"],
+  ["1F3B8", "play", "吉他", "guitar"],
+  ["1F3B9", "play", "琴键", "piano keys"],
+  ["1F941", "play", "鼓", "drum"],
+  ["1F3A4", "play", "麦克风", "microphone"],
 ].map(([hexcode, theme, zh, en]) => ({ hexcode, theme, labels: { zh, en } }));
+
+// Curated candidate sets: never fill a comprehension question from arbitrary words.
+// All matching objects stay out of its distractors, even when only one is shown.
+const GAME_QUESTIONS = [
+  {
+    id: "animals-meow", theme: "animals",
+    labels: { zh: "哪一种动物会喵喵叫？", en: "Which animal says meow?" },
+    answers: ["1F431"],
+    distractors: ["1F436", "1F430", "1F42E", "1F437", "1F434", "1F43B", "1F98B"],
+  },
+  {
+    id: "animals-woof", theme: "animals",
+    labels: { zh: "哪一种动物会汪汪叫？", en: "Which animal says woof?" },
+    answers: ["1F436"],
+    distractors: ["1F431", "1F430", "1F42E", "1F437", "1F434", "1F43B", "1F98B"],
+  },
+  {
+    id: "animals-milk", theme: "animals",
+    labels: { zh: "我们平时喝的奶来自哪种动物？", en: "Which animal gives us milk to drink?" },
+    answers: ["1F42E"],
+    distractors: ["1F436", "1F431", "1F430", "1F437", "1F42D", "1F98B", "1F43B"],
+  },
+  {
+    id: "animals-fly", theme: "animals",
+    labels: { zh: "哪一种动物会飞？", en: "Which animal can fly?" },
+    answers: ["1F98B"],
+    distractors: ["1F436", "1F431", "1F430", "1F42E", "1F437", "1F434", "1F42D", "1F43B", "1F43C", "1F428", "1F981"],
+  },
+  {
+    id: "ocean-fish", theme: "ocean",
+    labels: { zh: "哪一种是鱼？", en: "Which one is a fish?" },
+    answers: ["1F420", "1F988"],
+    distractors: ["1F42C", "1F433", "1F419", "1F991", "1F980", "1F99E", "1F990", "1F9AD", "1FABC", "1FAB8"],
+  },
+  {
+    id: "ocean-arms", theme: "ocean",
+    labels: { zh: "哪一种动物有八条腕？", en: "Which animal has eight arms?" },
+    answers: ["1F419"],
+    // Squid also have eight arms (and two tentacles), so are not distractors here.
+    distractors: ["1F420", "1F42C", "1F433", "1F988", "1F9AD"],
+  },
+  {
+    id: "ocean-claws", theme: "ocean",
+    labels: { zh: "哪一种动物有大钳子？", en: "Which animal has big claws?" },
+    answers: ["1F980", "1F99E"],
+    distractors: ["1F420", "1F42C", "1F433", "1F988", "1F419", "1F991", "1FABC"],
+  },
+  {
+    id: "ocean-umbrella", theme: "ocean",
+    labels: { zh: "哪一种动物的身体像小伞？", en: "Which animal is shaped like a little umbrella?" },
+    answers: ["1FABC"],
+    distractors: ["1F420", "1F42C", "1F988", "1F980", "1F99E", "1F990"],
+  },
+  // Category questions exclude tomato, eggplant and corn to avoid classification ambiguity.
+  {
+    id: "produce-fruit", theme: "produce",
+    labels: { zh: "哪一个是水果？", en: "Which one is a fruit?" },
+    answers: ["1F34E", "1F34C", "1F349", "1F353", "1F347", "1F34D"],
+    distractors: ["1F955", "1F697", "1F3E0", "1F9F8"],
+  },
+  {
+    id: "produce-vegetable", theme: "produce",
+    labels: { zh: "哪一个是蔬菜？", en: "Which one is a vegetable?" },
+    answers: ["1F955", "1F966", "1F954"],
+    distractors: ["1F34E", "1F697", "1F3E0", "1F9F8"],
+  },
+  {
+    id: "produce-peel", theme: "produce",
+    labels: { zh: "哪一种水果弯弯的，要剥皮吃？", en: "Which fruit is curved and needs peeling?" },
+    answers: ["1F34C"],
+    distractors: ["1F34E", "1F349", "1F353", "1F347", "1F34D"],
+  },
+  {
+    id: "produce-bunch", theme: "produce",
+    labels: { zh: "哪一种水果是一串串的小圆果？", en: "Which fruit grows in bunches of small round berries?" },
+    answers: ["1F347"],
+    distractors: ["1F34E", "1F34C", "1F349", "1F34D"],
+  },
+  {
+    id: "food-drink", theme: "food",
+    labels: { zh: "哪一个是饮料？", en: "Which one is a drink?" },
+    answers: ["1F95B", "1F9C3"],
+    distractors: ["1F355", "1F354", "1F35F", "1F32D", "1F32F", "1F96A", "1F363", "1F36A"],
+  },
+  {
+    id: "food-milk", theme: "food",
+    labels: { zh: "哪一种饮料来自奶牛？", en: "Which drink comes from cows?" },
+    answers: ["1F95B"],
+    distractors: ["1F9C3", "1F355", "1F354", "1F35F", "1F36A"],
+  },
+  {
+    id: "food-cold", theme: "food",
+    labels: { zh: "哪一个是冰凉的甜点？", en: "Which one is a frozen sweet treat?" },
+    answers: ["1F366"],
+    distractors: ["1F355", "1F354", "1F35F", "1F32D", "1F32F", "1F96A", "1F36A"],
+  },
+  {
+    id: "food-noodles", theme: "food",
+    labels: { zh: "哪一种面食是长长的一条条？", en: "Which food is made of long strands of dough?" },
+    answers: ["1F35C"],
+    distractors: ["1F355", "1F354", "1F32D", "1F32F", "1F96A", "1F363", "1F36A"],
+  },
+  {
+    id: "transport-fly", theme: "transport",
+    labels: { zh: "哪一种交通工具能在天上飞？", en: "Which vehicle can fly in the sky?" },
+    answers: ["2708", "1F681"],
+    distractors: ["1F697", "1F695", "1F68C", "1F69A", "1F69C", "1F6B2", "1F6F4", "1F3CD", "1F682", "1F6A2"],
+  },
+  {
+    id: "transport-rails", theme: "transport",
+    labels: { zh: "哪一种交通工具在轨道上行驶？", en: "Which vehicle runs on rails?" },
+    answers: ["1F682"],
+    distractors: ["1F697", "1F695", "1F68C", "1F69A", "1F69C", "1F6B2", "1F6F4", "1F3CD", "2708", "1F681", "1F6A2"],
+  },
+  {
+    id: "transport-water", theme: "transport",
+    labels: { zh: "哪一种交通工具在水上航行？", en: "Which vehicle sails on water?" },
+    answers: ["1F6A2"],
+    distractors: ["1F697", "1F695", "1F68C", "1F69A", "1F69C", "1F6B2", "1F6F4", "1F3CD", "1F682"],
+  },
+  {
+    id: "transport-pedals", theme: "transport",
+    labels: { zh: "哪一种车要踩脚踏板骑行？", en: "Which one do you ride by pedaling?" },
+    answers: ["1F6B2"],
+    distractors: ["1F697", "1F695", "1F68C", "1F69A", "1F6F4", "1F3CD", "1F682", "1F6A2"],
+  },
+  {
+    id: "nature-sunshine", theme: "nature",
+    labels: { zh: "哪一个给我们带来阳光？", en: "Which one gives us sunshine?" },
+    answers: ["2600"],
+    distractors: ["1F319", "2601", "2744", "1F30A", "1F333", "1F33C", "1F4A7"],
+  },
+  {
+    id: "nature-rainbow", theme: "nature",
+    labels: { zh: "雨后天空中的七彩弧线是哪一个？", en: "Which colorful arc can appear after rain?" },
+    answers: ["1F308"],
+    distractors: ["2600", "1F319", "2601", "2744", "1F30A", "1F30B", "1F4A7"],
+  },
+  {
+    id: "nature-spines", theme: "nature",
+    labels: { zh: "哪一种植物身上有很多刺？", en: "Which plant has lots of spines?" },
+    answers: ["1F335"],
+    distractors: ["1F333", "1F33C", "1F344", "2601", "1F30A", "1F4A7"],
+  },
+  {
+    id: "nature-lava", theme: "nature",
+    labels: { zh: "哪一个会喷出岩浆？", en: "Which one can erupt with lava?" },
+    answers: ["1F30B"],
+    distractors: ["2601", "2744", "1F30A", "1F333", "1F33C", "1F335", "1F344", "1F4A7"],
+  },
+  {
+    id: "home-feet", theme: "home",
+    labels: { zh: "哪一个可以穿在脚上？", en: "Which one do you wear on your feet?" },
+    answers: ["1F45F"],
+    distractors: ["1F455", "1F457", "1F9E2", "1F392", "1F511", "1F4A1"],
+  },
+  {
+    id: "home-head", theme: "home",
+    labels: { zh: "哪一个可以戴在头上？", en: "Which one do you wear on your head?" },
+    answers: ["1F9E2"],
+    distractors: ["1F455", "1F456", "1F457", "1F45F", "1F392", "1F511", "1F4A1"],
+  },
+  {
+    id: "home-key", theme: "home",
+    labels: { zh: "哪一个可以打开门锁？", en: "Which one can unlock a door?" },
+    answers: ["1F511"],
+    distractors: ["1F4A1", "1F455", "1F456", "1F457", "1F45F", "1F9E2", "1F392"],
+  },
+  {
+    id: "home-sleep", theme: "home",
+    labels: { zh: "哪一个是让我们躺着睡觉的？", en: "Which one is made for lying down to sleep?" },
+    answers: ["1F6CF"],
+    distractors: ["1FA91", "1F511", "1F4A1", "1F455", "1F456", "1F457", "1F45F", "1F9E2", "1F392"],
+  },
+  {
+    id: "play-kick", theme: "play",
+    labels: { zh: "哪一种球通常用脚踢？", en: "Which ball do we usually kick?" },
+    answers: ["26BD"],
+    distractors: ["1F3C0", "1F3BE", "1F9F8", "1F9E9", "1F381", "1F3B8"],
+  },
+  {
+    id: "play-wind", theme: "play",
+    labels: { zh: "哪一种玩具借着风飞起来？", en: "Which toy flies in the wind?" },
+    answers: ["1FA81"],
+    distractors: ["1F9F8", "1FA80", "1F9E9", "1F3C0", "26BD", "1F3BE"],
+  },
+  {
+    id: "play-drum", theme: "play",
+    labels: { zh: "哪一种乐器用鼓棒敲？", en: "Which instrument do we play with drumsticks?" },
+    answers: ["1F941"],
+    distractors: ["1F3B8", "1F3B9", "1F3A4", "1F9F8", "1FA80", "1F9E9"],
+  },
+  {
+    id: "play-gift", theme: "play",
+    labels: { zh: "哪一个已经包装好，准备送给别人？", en: "Which one is wrapped and ready to give?" },
+    answers: ["1F381"],
+    distractors: ["1F9F8", "1FA80", "1FA81", "1F9E9", "1F3C0", "26BD", "1F3BE", "1F3B8", "1F3B9", "1F941", "1F3A4"],
+  },
+];
 
 const GAME_PRAISE = [
   { zh: "找到了！", en: "You found it!" },
@@ -180,7 +453,8 @@ const dom = {
   gamePanel: document.querySelector("#gamePanel"),
   gameBackButton: document.querySelector("#gameBackButton"),
   gameLanguagePicker: document.querySelector("#gameLanguagePicker"),
-  gameThemes: document.querySelector("#gameThemes"),
+  gameThemeSelect: document.querySelector("#gameThemeSelect"),
+  gameModePicker: document.querySelector("#gameModePicker"),
   gameQuestion: document.querySelector("#gameQuestion"),
   gameReplayButton: document.querySelector("#gameReplayButton"),
   gameOptions: document.querySelector("#gameOptions"),
@@ -208,9 +482,12 @@ const game = {
   active: false,
   language: "zh",
   theme: "mixed",
-  pools: { mixed: [], animals: [], food: [], everyday: [] },
+  mode: "name",
+  pools: {},
+  questionPools: {},
   deck: [],
   question: null,
+  prompt: null,
   options: [],
   mistakes: 0,
   locked: false,
@@ -637,11 +914,20 @@ function prepareGamePools() {
     const item = available.get(word.hexcode);
     return item?.emoji && item.emoji !== "❔";
   }).map((word) => ({ ...word, emoji: available.get(word.hexcode).emoji }));
-  Object.keys(game.pools).forEach((theme) => {
+  const byHexcode = new Map(words.map((word) => [word.hexcode, word]));
+  const questions = GAME_QUESTIONS.map((question) => ({
+    ...question,
+    answers: question.answers.map((hexcode) => byHexcode.get(hexcode)).filter(Boolean),
+    distractors: question.distractors
+      .filter((hexcode) => !question.answers.includes(hexcode))
+      .map((hexcode) => byHexcode.get(hexcode)).filter(Boolean),
+  })).filter((question) => question.answers.length && question.distractors.length >= 2);
+  ["mixed", ...GAME_THEMES].forEach((theme) => {
     game.pools[theme] = words.filter((word) => theme === "mixed" || word.theme === theme);
+    game.questionPools[theme] = questions.filter((question) => theme === "mixed" || question.theme === theme);
   });
-  dom.startGameButton.disabled = game.pools.mixed.length < 3;
-  renderGameThemes();
+  dom.startGameButton.disabled = !gameThemeAvailable("mixed", "name");
+  renderGameControls();
 }
 
 function shuffled(items) {
@@ -675,13 +961,20 @@ function renderGameText() {
   renderGameFeedback();
 }
 
-function renderGameThemes() {
-  dom.gameThemes.querySelectorAll("[data-game-theme]").forEach((button) => {
-    const theme = button.dataset.gameTheme;
-    const active = theme === game.theme;
-    button.disabled = game.pools[theme].length < 3;
-    button.classList.toggle("is-active", active);
-    button.setAttribute("aria-pressed", String(active));
+function gameThemeAvailable(theme, mode = game.mode) {
+  if (!game.pools[theme] || game.pools[theme].length < 3) return false;
+  return mode === "name" || (mode === "think" && game.questionPools[theme].length > 0);
+}
+
+function renderGameControls() {
+  Array.from(dom.gameThemeSelect.options).forEach((option) => {
+    option.disabled = !gameThemeAvailable(option.value);
+  });
+  dom.gameThemeSelect.value = game.theme;
+  dom.gameThemeSelect.disabled = !gameThemeAvailable("mixed");
+  dom.gameModePicker.querySelectorAll('input[name="game-mode"]').forEach((input) => {
+    input.checked = input.value === game.mode;
+    input.disabled = !gameThemeAvailable(game.theme, input.value);
   });
 }
 
@@ -714,6 +1007,7 @@ function speakGame(labels, onComplete = () => {}) {
 }
 
 function gameQuestionLabels() {
+  if (game.prompt) return game.prompt.labels;
   return {
     zh: `${game.question.labels.zh}在哪里？`,
     en: `Find the ${game.question.labels.en}!`,
@@ -721,19 +1015,28 @@ function gameQuestionLabels() {
 }
 
 function nextGameQuestion() {
-  const pool = game.pools[game.theme];
-  if (!game.active || pool.length < 3) return;
+  if (!game.active || !gameThemeAvailable(game.theme)) return;
+  const pool = game.mode === "think" ? game.questionPools[game.theme] : game.pools[game.theme];
   cancelGameActivity();
   if (!game.deck.length) {
     game.deck = shuffled(pool);
-    // Keep every word in the new round, while avoiding a repeated boundary.
-    if (game.deck[0].hexcode === game.question?.hexcode) {
+    // Keep every entry in the round; a one-question fallback cannot avoid repeating.
+    const previous = game.prompt?.id || game.question?.hexcode;
+    const first = game.deck[0].id || game.deck[0].hexcode;
+    if (game.deck.length > 1 && first === previous) {
       const other = 1 + Math.floor(Math.random() * (game.deck.length - 1));
       [game.deck[0], game.deck[other]] = [game.deck[other], game.deck[0]];
     }
   }
-  game.question = game.deck.shift();
-  const distractors = shuffled(pool.filter((word) => word.hexcode !== game.question.hexcode)).slice(0, 2);
+  const entry = game.deck.shift();
+  game.prompt = game.mode === "think" ? entry : null;
+  game.question = game.prompt ? shuffled(game.prompt.answers)[0] : entry;
+  // Prefer curated distractors from this topic, then use approved cross-topic ones.
+  const candidates = game.prompt ? [
+    ...shuffled(game.prompt.distractors.filter((word) => word.theme === game.prompt.theme)),
+    ...shuffled(game.prompt.distractors.filter((word) => word.theme !== game.prompt.theme)),
+  ] : shuffled(pool.filter((word) => word.hexcode !== game.question.hexcode));
+  const distractors = candidates.slice(0, 2);
   game.options = shuffled([game.question, ...distractors]);
   game.mistakes = 0;
   game.locked = false;
@@ -748,17 +1051,14 @@ function nextGameQuestion() {
 }
 
 function enterGame() {
-  if (game.active || game.pools.mixed.length < 3) return;
+  if (game.active || !gameThemeAvailable(game.theme)) return;
   game.homeScrollY = window.scrollY;
   game.active = true;
-  game.theme = "mixed";
-  game.deck = [];
-  game.question = null;
   setSettingsOpen(false);
   dom.learnPanel.hidden = true;
   dom.explorePanel.hidden = true;
   dom.gamePanel.hidden = false;
-  renderGameThemes();
+  renderGameControls();
   nextGameQuestion();
   window.scrollTo(0, 0);
   dom.gameReplayButton.focus({ preventScroll: true });
@@ -777,10 +1077,18 @@ function exitGame() {
 }
 
 function changeGameTheme(theme) {
-  if (!game.active || theme === game.theme || !game.pools[theme] || game.pools[theme].length < 3) return;
+  if (!game.active || theme === game.theme || !gameThemeAvailable(theme)) return;
   game.theme = theme;
   game.deck = [];
-  renderGameThemes();
+  renderGameControls();
+  nextGameQuestion();
+}
+
+function changeGameMode(mode) {
+  if (!game.active || mode === game.mode || !gameThemeAvailable(game.theme, mode)) return;
+  game.mode = mode;
+  game.deck = [];
+  renderGameControls();
   nextGameQuestion();
 }
 
@@ -803,13 +1111,13 @@ function continueGameAfterSpeech(speak) {
   const advance = () => {
     if (game.active && game.locked && run === game.run) nextGameQuestion();
   };
-  // Set both timers before speaking: missing speech can finish synchronously.
+  // Missing speech can finish synchronously, so schedule the minimum first.
+  // speakLabels' timeout handles a stalled voice without cutting off normal praise.
   game.timers = [
     window.setTimeout(() => {
       minimumElapsed = true;
       if (speechFinished) advance();
     }, 1200),
-    window.setTimeout(advance, 4000),
   ];
   speak(() => {
     speechFinished = true;
@@ -890,9 +1198,12 @@ function bindEvents() {
     const input = event.target.closest('input[name="game-language"]');
     if (input?.checked) changeGameLanguage(input.value);
   });
-  dom.gameThemes.addEventListener("click", (event) => {
-    const button = event.target.closest("[data-game-theme]");
-    if (button && !button.disabled) changeGameTheme(button.dataset.gameTheme);
+  dom.gameThemeSelect.addEventListener("change", () => {
+    changeGameTheme(dom.gameThemeSelect.value);
+  });
+  dom.gameModePicker.addEventListener("change", (event) => {
+    const input = event.target.closest('input[name="game-mode"]');
+    if (input?.checked && !input.disabled) changeGameMode(input.value);
   });
   dom.gameOptions.addEventListener("click", (event) => {
     const button = event.target.closest("[data-game-hexcode]");

@@ -777,8 +777,7 @@ a:focus-visible {
 }
 
 .game-back-button,
-.game-replay-button,
-.game-theme-button {
+.game-replay-button {
   color: var(--ink);
   font-weight: 800;
   cursor: pointer;
@@ -833,7 +832,8 @@ a:focus-visible {
   font-weight: 800;
 }
 
-.game-language-options {
+.game-language-options,
+.game-mode-options {
   position: relative;
   display: grid;
   flex: 1 1 auto;
@@ -845,7 +845,8 @@ a:focus-visible {
   border-radius: 12px;
 }
 
-.game-language-options input {
+.game-language-options input,
+.game-mode-options input {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -857,7 +858,8 @@ a:focus-visible {
   white-space: nowrap;
 }
 
-.game-language-options label {
+.game-language-options label,
+.game-mode-options label {
   display: grid;
   min-width: 0;
   min-height: 44px;
@@ -870,50 +872,82 @@ a:focus-visible {
   cursor: pointer;
 }
 
-.game-language-options label + input + label {
+.game-language-options label + input + label,
+.game-mode-options label + input + label {
   border-left: 1px solid var(--line);
 }
 
-.game-language-options input:checked + label {
+.game-language-options input:checked + label,
+.game-mode-options input:checked + label {
   color: #fff;
   background: var(--ink);
 }
 
-.game-language-options input:focus-visible + label {
+.game-language-options input:focus-visible + label,
+.game-mode-options input:focus-visible + label {
   outline: 3px solid rgba(35, 103, 209, 0.36);
   outline-offset: -3px;
 }
 
-.game-themes {
+.game-back-button:active,
+.game-replay-button:active {
+  transform: scale(0.97);
+}
+
+.game-controls-row {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 6px;
-  margin: 8px 0 14px;
+  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.18fr);
+  gap: 8px;
+  margin: 8px 0 10px;
 }
 
-.game-theme-button {
-  min-height: 34px;
-  padding: 6px 8px;
+.game-theme-picker,
+.game-mode-picker {
+  display: grid;
+  min-width: 0;
+  gap: 4px;
+}
+
+.game-control-caption {
   color: var(--muted-deep);
+  font-size: 0.64rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+#gameThemeSelect {
+  width: 100%;
+  min-width: 0;
+  min-height: 38px;
+  padding: 6px 8px;
+  color: var(--ink);
+  font: inherit;
   font-size: 0.72rem;
-  border-radius: 999px;
+  font-weight: 800;
+  background: #fff;
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
 }
 
-.game-theme-button[aria-pressed="true"] {
-  color: #fff;
-  background: var(--ink);
-  border-color: var(--ink);
+#gameThemeSelect:focus-visible {
+  outline: 3px solid rgba(35, 103, 209, 0.36);
+  outline-offset: 1px;
 }
 
-.game-theme-button:disabled {
+#gameThemeSelect:disabled {
+  cursor: default;
+  opacity: 0.42;
+}
+
+.game-mode-options label {
+  min-height: 38px;
+  padding: 6px 4px;
+  font-size: 0.7rem;
+}
+
+.game-mode-options input:disabled + label {
   cursor: default;
   opacity: 0.38;
-}
-
-.game-back-button:active,
-.game-replay-button:active,
-.game-theme-button:active:not(:disabled) {
-  transform: scale(0.97);
 }
 
 .game-round {
@@ -1099,6 +1133,58 @@ a:focus-visible {
   border-radius: 18px;
 }
 
+@media (max-width: 559px) and (max-height: 520px) {
+  .game-panel {
+    padding-top: max(8px, env(safe-area-inset-top));
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
+  }
+
+  .game-header {
+    min-height: 38px;
+  }
+
+  .game-language-picker {
+    margin-top: 5px;
+  }
+
+  .game-language-options label {
+    min-height: 38px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+  }
+
+  .game-controls-row {
+    margin-top: 5px;
+    margin-bottom: 6px;
+  }
+
+  #gameThemeSelect,
+  .game-mode-options label {
+    min-height: 34px;
+  }
+
+  .game-question {
+    min-height: 50px;
+  }
+
+  .game-replay-button {
+    min-height: 34px;
+    margin-top: 3px;
+    margin-bottom: 7px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+  }
+
+  .game-feedback {
+    min-height: 40px;
+    margin-top: 6px;
+  }
+
+  .game-speech-note {
+    min-height: 14px;
+  }
+}
+
 @media (min-width: 560px) {
   .app-shell {
     padding: 24px 0;
@@ -1144,10 +1230,6 @@ a:focus-visible {
     padding-right: 28px;
     padding-left: 28px;
     border-radius: 32px;
-  }
-
-  .game-themes {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
   .game-options {
