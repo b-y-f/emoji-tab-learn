@@ -169,204 +169,110 @@ const GAME_WORDS = [
   ["1F3A4", "play", "麦克风", "microphone"],
 ].map(([hexcode, theme, zh, en]) => ({ hexcode, theme, labels: { zh, en } }));
 
-// Curated candidate sets: never fill a comprehension question from arbitrary words.
-// All matching objects stay out of its distractors, even when only one is shown.
+// Curated concept questions: each row has one reviewed answer and intentional distractors.
+// `type` and `concept` let the deck keep adjacent questions varied without changing the UI.
 const GAME_QUESTIONS = [
-  {
-    id: "animals-meow", theme: "animals",
-    labels: { zh: "哪一种动物会喵喵叫？", en: "Which animal says meow?" },
-    answers: ["1F431"],
-    distractors: ["1F436", "1F430", "1F42E", "1F437", "1F434", "1F43B", "1F98B"],
-  },
-  {
-    id: "animals-woof", theme: "animals",
-    labels: { zh: "哪一种动物会汪汪叫？", en: "Which animal says woof?" },
-    answers: ["1F436"],
-    distractors: ["1F431", "1F430", "1F42E", "1F437", "1F434", "1F43B", "1F98B"],
-  },
-  {
-    id: "animals-milk", theme: "animals",
-    labels: { zh: "我们平时喝的奶来自哪种动物？", en: "Which animal gives us milk to drink?" },
-    answers: ["1F42E"],
-    distractors: ["1F436", "1F431", "1F430", "1F437", "1F42D", "1F98B", "1F43B"],
-  },
-  {
-    id: "animals-fly", theme: "animals",
-    labels: { zh: "哪一种动物会飞？", en: "Which animal can fly?" },
-    answers: ["1F98B"],
-    distractors: ["1F436", "1F431", "1F430", "1F42E", "1F437", "1F434", "1F42D", "1F43B", "1F43C", "1F428", "1F981"],
-  },
-  {
-    id: "ocean-fish", theme: "ocean",
-    labels: { zh: "哪一种是鱼？", en: "Which one is a fish?" },
-    answers: ["1F420", "1F988"],
-    distractors: ["1F42C", "1F433", "1F419", "1F991", "1F980", "1F99E", "1F990", "1F9AD", "1FABC", "1FAB8"],
-  },
-  {
-    id: "ocean-arms", theme: "ocean",
-    labels: { zh: "哪一种动物有八条腕？", en: "Which animal has eight arms?" },
-    answers: ["1F419"],
-    // Squid also have eight arms (and two tentacles), so are not distractors here.
-    distractors: ["1F420", "1F42C", "1F433", "1F988", "1F9AD"],
-  },
-  {
-    id: "ocean-claws", theme: "ocean",
-    labels: { zh: "哪一种动物有大钳子？", en: "Which animal has big claws?" },
-    answers: ["1F980", "1F99E"],
-    distractors: ["1F420", "1F42C", "1F433", "1F988", "1F419", "1F991", "1FABC"],
-  },
-  {
-    id: "ocean-umbrella", theme: "ocean",
-    labels: { zh: "哪一种动物的身体像小伞？", en: "Which animal is shaped like a little umbrella?" },
-    answers: ["1FABC"],
-    distractors: ["1F420", "1F42C", "1F988", "1F980", "1F99E", "1F990"],
-  },
-  // Category questions exclude tomato, eggplant and corn to avoid classification ambiguity.
-  {
-    id: "produce-fruit", theme: "produce",
-    labels: { zh: "哪一个是水果？", en: "Which one is a fruit?" },
-    answers: ["1F34E", "1F34C", "1F349", "1F353", "1F347", "1F34D"],
-    distractors: ["1F955", "1F697", "1F3E0", "1F9F8"],
-  },
-  {
-    id: "produce-vegetable", theme: "produce",
-    labels: { zh: "哪一个是蔬菜？", en: "Which one is a vegetable?" },
-    answers: ["1F955", "1F966", "1F954"],
-    distractors: ["1F34E", "1F697", "1F3E0", "1F9F8"],
-  },
-  {
-    id: "produce-peel", theme: "produce",
-    labels: { zh: "哪一种水果弯弯的，要剥皮吃？", en: "Which fruit is curved and needs peeling?" },
-    answers: ["1F34C"],
-    distractors: ["1F34E", "1F349", "1F353", "1F347", "1F34D"],
-  },
-  {
-    id: "produce-bunch", theme: "produce",
-    labels: { zh: "哪一种水果是一串串的小圆果？", en: "Which fruit grows in bunches of small round berries?" },
-    answers: ["1F347"],
-    distractors: ["1F34E", "1F34C", "1F349", "1F34D"],
-  },
-  {
-    id: "food-drink", theme: "food",
-    labels: { zh: "哪一个是饮料？", en: "Which one is a drink?" },
-    answers: ["1F95B", "1F9C3"],
-    distractors: ["1F355", "1F354", "1F35F", "1F32D", "1F32F", "1F96A", "1F363", "1F36A"],
-  },
-  {
-    id: "food-milk", theme: "food",
-    labels: { zh: "哪一种饮料来自奶牛？", en: "Which drink comes from cows?" },
-    answers: ["1F95B"],
-    distractors: ["1F9C3", "1F355", "1F354", "1F35F", "1F36A"],
-  },
-  {
-    id: "food-cold", theme: "food",
-    labels: { zh: "哪一个是冰凉的甜点？", en: "Which one is a frozen sweet treat?" },
-    answers: ["1F366"],
-    distractors: ["1F355", "1F354", "1F35F", "1F32D", "1F32F", "1F96A", "1F36A"],
-  },
-  {
-    id: "food-noodles", theme: "food",
-    labels: { zh: "哪一种面食是长长的一条条？", en: "Which food is made of long strands of dough?" },
-    answers: ["1F35C"],
-    distractors: ["1F355", "1F354", "1F32D", "1F32F", "1F96A", "1F363", "1F36A"],
-  },
-  {
-    id: "transport-fly", theme: "transport",
-    labels: { zh: "哪一种交通工具能在天上飞？", en: "Which vehicle can fly in the sky?" },
-    answers: ["2708", "1F681"],
-    distractors: ["1F697", "1F695", "1F68C", "1F69A", "1F69C", "1F6B2", "1F6F4", "1F3CD", "1F682", "1F6A2"],
-  },
-  {
-    id: "transport-rails", theme: "transport",
-    labels: { zh: "哪一种交通工具在轨道上行驶？", en: "Which vehicle runs on rails?" },
-    answers: ["1F682"],
-    distractors: ["1F697", "1F695", "1F68C", "1F69A", "1F69C", "1F6B2", "1F6F4", "1F3CD", "2708", "1F681", "1F6A2"],
-  },
-  {
-    id: "transport-water", theme: "transport",
-    labels: { zh: "哪一种交通工具在水上航行？", en: "Which vehicle sails on water?" },
-    answers: ["1F6A2"],
-    distractors: ["1F697", "1F695", "1F68C", "1F69A", "1F69C", "1F6B2", "1F6F4", "1F3CD", "1F682"],
-  },
-  {
-    id: "transport-pedals", theme: "transport",
-    labels: { zh: "哪一种车要踩脚踏板骑行？", en: "Which one do you ride by pedaling?" },
-    answers: ["1F6B2"],
-    distractors: ["1F697", "1F695", "1F68C", "1F69A", "1F6F4", "1F3CD", "1F682", "1F6A2"],
-  },
-  {
-    id: "nature-sunshine", theme: "nature",
-    labels: { zh: "哪一个给我们带来阳光？", en: "Which one gives us sunshine?" },
-    answers: ["2600"],
-    distractors: ["1F319", "2601", "2744", "1F30A", "1F333", "1F33C", "1F4A7"],
-  },
-  {
-    id: "nature-rainbow", theme: "nature",
-    labels: { zh: "雨后天空中的七彩弧线是哪一个？", en: "Which colorful arc can appear after rain?" },
-    answers: ["1F308"],
-    distractors: ["2600", "1F319", "2601", "2744", "1F30A", "1F30B", "1F4A7"],
-  },
-  {
-    id: "nature-spines", theme: "nature",
-    labels: { zh: "哪一种植物身上有很多刺？", en: "Which plant has lots of spines?" },
-    answers: ["1F335"],
-    distractors: ["1F333", "1F33C", "1F344", "2601", "1F30A", "1F4A7"],
-  },
-  {
-    id: "nature-lava", theme: "nature",
-    labels: { zh: "哪一个会喷出岩浆？", en: "Which one can erupt with lava?" },
-    answers: ["1F30B"],
-    distractors: ["2601", "2744", "1F30A", "1F333", "1F33C", "1F335", "1F344", "1F4A7"],
-  },
-  {
-    id: "home-feet", theme: "home",
-    labels: { zh: "哪一个可以穿在脚上？", en: "Which one do you wear on your feet?" },
-    answers: ["1F45F"],
-    distractors: ["1F455", "1F457", "1F9E2", "1F392", "1F511", "1F4A1"],
-  },
-  {
-    id: "home-head", theme: "home",
-    labels: { zh: "哪一个可以戴在头上？", en: "Which one do you wear on your head?" },
-    answers: ["1F9E2"],
-    distractors: ["1F455", "1F456", "1F457", "1F45F", "1F392", "1F511", "1F4A1"],
-  },
-  {
-    id: "home-key", theme: "home",
-    labels: { zh: "哪一个可以打开门锁？", en: "Which one can unlock a door?" },
-    answers: ["1F511"],
-    distractors: ["1F4A1", "1F455", "1F456", "1F457", "1F45F", "1F9E2", "1F392"],
-  },
-  {
-    id: "home-sleep", theme: "home",
-    labels: { zh: "哪一个是让我们躺着睡觉的？", en: "Which one is made for lying down to sleep?" },
-    answers: ["1F6CF"],
-    distractors: ["1FA91", "1F511", "1F4A1", "1F455", "1F456", "1F457", "1F45F", "1F9E2", "1F392"],
-  },
-  {
-    id: "play-kick", theme: "play",
-    labels: { zh: "哪一种球通常用脚踢？", en: "Which ball do we usually kick?" },
-    answers: ["26BD"],
-    distractors: ["1F3C0", "1F3BE", "1F9F8", "1F9E9", "1F381", "1F3B8"],
-  },
-  {
-    id: "play-wind", theme: "play",
-    labels: { zh: "哪一种玩具借着风飞起来？", en: "Which toy flies in the wind?" },
-    answers: ["1FA81"],
-    distractors: ["1F9F8", "1FA80", "1F9E9", "1F3C0", "26BD", "1F3BE"],
-  },
-  {
-    id: "play-drum", theme: "play",
-    labels: { zh: "哪一种乐器用鼓棒敲？", en: "Which instrument do we play with drumsticks?" },
-    answers: ["1F941"],
-    distractors: ["1F3B8", "1F3B9", "1F3A4", "1F9F8", "1FA80", "1F9E9"],
-  },
-  {
-    id: "play-gift", theme: "play",
-    labels: { zh: "哪一个已经包装好，准备送给别人？", en: "Which one is wrapped and ready to give?" },
-    answers: ["1F381"],
-    distractors: ["1F9F8", "1FA80", "1FA81", "1F9E9", "1F3C0", "26BD", "1F3BE", "1F3B8", "1F3B9", "1F941", "1F3A4"],
-  },
-];
+  ["animals-meow", "animals", "warmup", "cat-sound", "哪种动物会喵喵叫？", "Which animal says meow?", ["1F431"], ["1F436", "1F430", "1F42E", "1F437"]],
+  ["animals-woof", "animals", "warmup", "dog-sound", "哪种动物会汪汪叫？", "Which animal says woof?", ["1F436"], ["1F431", "1F430", "1F437", "1F981"]],
+  ["animals-milk", "animals", "relation", "cow-milk", "我们喝的牛奶和哪种动物最有关系？", "Which animal is most closely connected with the milk we drink?", ["1F42E"], ["1F434", "1F437", "1F43B", "1F436"]],
+  ["animals-butterfly-flight", "animals", "dual", "butterfly-flight", "哪个会飞，而且不是交通工具？", "Which one can fly and is not a vehicle?", ["1F98B"], ["2708", "1F436", "1F697"]],
+  ["animals-butterfly-flight-2", "animals", "dual", "butterfly-flight", "找一个能飞上天空、又不是交通工具的小动物。", "Find a small animal that can fly in the sky and is not a vehicle.", ["1F98B"], ["2708", "1F436", "1F697"]],
+  ["animals-rabbit-clues", "animals", "dual", "rabbit-clues", "哪个会蹦跳，而且有长长的耳朵？", "Which one hops and has long ears?", ["1F430"], ["1F42D", "1F431", "1F43B", "1F437"]],
+  ["animals-panda-clues", "animals", "dual", "panda-clues", "哪个是熊，而且身上黑白相间？", "Which one is a bear with black-and-white fur?", ["1F43C"], ["1F43B", "1F428", "1F42E", "1F981"]],
+  ["animals-lion-clues", "animals", "dual", "lion-clues", "哪个像大猫，头周围常有一圈长毛？", "Which one is a big cat whose head can have a mane?", ["1F981"], ["1F431", "1F43B", "1F42E", "1F434"]],
+  ["animals-not-animal", "animals", "exclusion", "animal-exclusion", "小狗、小猫、飞机里，哪个不是动物？", "Dog, cat, airplane: which one is not an animal?", ["2708"], ["1F436", "1F431"]],
+
+  ["ocean-octopus", "ocean", "dual", "octopus-arms", "哪个有八条腕，而且不是鱼？", "Which one has eight arms and is not a fish?", ["1F419"], ["1F420", "1F988", "1F42C", "1FAB8"]],
+  ["ocean-octopus-2", "ocean", "dual", "octopus-arms", "海里哪个不是鱼，却有八条腕？", "Which sea creature is not a fish but has eight arms?", ["1F419"], ["1F420", "1F988", "1F42C", "1FAB8"]],
+  ["ocean-jellyfish", "ocean", "scene", "jellyfish-shape", "海里有个软软的东西，像小伞一样漂着，是哪个？", "Which soft sea creature drifts like a little umbrella?", ["1FABC"], ["1F991", "1F420", "1FAB8", "1F980"]],
+  ["ocean-crab", "ocean", "dual", "crab-clues", "哪个有大钳子，还常常横着走？", "Which one has big claws and often walks sideways?", ["1F980"], ["1F990", "1F419", "1F420", "1FABC"]],
+  ["ocean-dolphin", "ocean", "cause", "dolphin-breathing", "哪个在海里游，却要常到水面呼吸空气？", "Which one swims in the sea but must surface to breathe air?", ["1F42C"], ["1F420", "1F988", "1F419", "1F991"]],
+  ["ocean-whale", "ocean", "scene", "whale-spout", "在海上看到巨大动物浮到水面喷水气，应该找哪个？", "Which huge sea animal may surface with a visible spout?", ["1F433"], ["1F420", "1F988", "1F419", "1F990"]],
+  ["ocean-shark", "ocean", "dual", "shark-clues", "哪个像鱼一样游，还有一口尖尖的牙？", "Which one swims like a fish and has a mouth full of sharp teeth?", ["1F988"], ["1F420", "1FABC", "1FAB8", "1F991"]],
+  ["ocean-coral", "ocean", "relation", "coral-stays-put", "哪个住在海底，像彩色枝条一样，不会游来游去？", "Which one stays on the seafloor like colorful branches instead of swimming around?", ["1FAB8"], ["1F420", "1F991", "1FABC", "1F42C"]],
+  ["ocean-not-animal", "ocean", "exclusion", "ocean-exclusion", "海豚、鲨鱼、轮船里，哪个不是动物？", "Dolphin, shark, ship: which one is not an animal?", ["1F6A2"], ["1F42C", "1F988"]],
+
+  ["produce-banana", "produce", "dual", "banana-clues", "哪个是水果，而且弯弯的、要剥皮吃？", "Which fruit is curved and needs peeling?", ["1F34C"], ["1F34E", "1F955", "1F33D", "1F353"]],
+  ["produce-grapes", "produce", "dual", "grape-clues", "哪个是水果，而且是一串串的小圆果？", "Which fruit grows in bunches of small round fruits?", ["1F347"], ["1F34E", "1F34C", "1F966", "1F954"]],
+  ["produce-grapes-2", "produce", "dual", "grape-clues", "找一个小圆果一串串长着的水果。", "Find the fruit made of many small round fruits growing in a bunch.", ["1F347"], ["1F34E", "1F34C", "1F966", "1F954"]],
+  ["produce-pineapple", "produce", "dual", "pineapple-clues", "哪个水果头顶像有叶子王冠，外皮还扎扎的？", "Which fruit has a leafy crown and a prickly outside?", ["1F34D"], ["1F349", "1F353", "1F34E", "1F955"]],
+  ["produce-watermelon", "produce", "scene", "watermelon-cut", "夏天切开水果，外面绿色、里面常常红红的，选哪个？", "Which summer fruit is green outside and often red inside when cut?", ["1F349"], ["1F34E", "1F34D", "1F966", "1F954"]],
+  ["produce-tomato", "produce", "function", "tomato-sauce", "想做番茄酱，最应该找哪个？", "Which one would you choose to make tomato sauce?", ["1F345"], ["1F353", "1F34E", "1F955", "1F34C"]],
+  ["produce-broccoli", "produce", "classification", "broccoli-shape", "哪个是蔬菜，而且看起来像一棵小树？", "Which vegetable looks like a little tree?", ["1F966"], ["1F955", "1F347", "1F33D", "1F954"]],
+  ["produce-corn", "produce", "relation", "corn-kernels", "剥开以后，会看到一排排黄色小颗粒的是哪个？", "Which one has rows of little yellow kernels when you open it?", ["1F33D"], ["1F34C", "1F966", "1F954", "1F346"]],
+  ["produce-odd-one", "produce", "exclusion", "produce-exclusion", "苹果、香蕉、胡萝卜里，哪个和另外两个不是一类？", "Apple, banana, carrot: which one is in a different group?", ["1F955"], ["1F34E", "1F34C"]],
+
+  ["food-milk", "food", "relation", "milk-source", "哪种饮料来自奶牛，而且可以直接喝？", "Which drink comes from cows and can be drunk?", ["1F95B"], ["1F9C3", "1F366", "1F355", "1F36A"]],
+  ["food-milk-2", "food", "relation", "milk-source", "哪杯饮料和奶牛最有关系？", "Which drink is most closely connected with cows?", ["1F95B"], ["1F9C3", "1F366", "1F355", "1F36A"]],
+  ["food-ice-cream", "food", "dual", "ice-cream-clues", "哪个又冰凉、又是甜甜的点心？", "Which one is both frozen and sweet?", ["1F366"], ["1F355", "1F35F", "1F354", "1F36A"]],
+  ["food-noodles", "food", "dual", "noodle-clues", "哪个长长一条条，常常用筷子夹着吃？", "Which food comes in long strands and is often eaten with chopsticks?", ["1F35C"], ["1F363", "1F355", "1F354", "1F32F"]],
+  ["food-pizza", "food", "relation", "pizza-slices", "哪个常常是圆圆一大张，再切成三角形小块？", "Which food is often a big round pie cut into triangle slices?", ["1F355"], ["1F36A", "1F354", "1F35F", "1F96A"]],
+  ["food-burger", "food", "dual", "burger-layers", "哪个上下是圆面包，中间还夹着很多馅？", "Which one has round buns on top and bottom with fillings in the middle?", ["1F354"], ["1F96A", "1F32F", "1F32D", "1F355"]],
+  ["food-juice-box", "food", "scene", "juice-box-trip", "出门口渴了，想拿一盒带吸管的果汁，选哪个？", "Which one would you take for a boxed juice drink with a straw?", ["1F9C3"], ["1F95B", "1F355", "1F36A", "1F35F"]],
+  ["food-cookie", "food", "dual", "cookie-clues", "哪个是小小的甜点，烤好后常常脆脆的？", "Which one is a small sweet treat that is often crisp after baking?", ["1F36A"], ["1F35F", "1F366", "1F355", "1F32D"]],
+  ["food-not-drink", "food", "exclusion", "food-exclusion", "牛奶、果汁盒、薯条里，哪个不能当饮料喝？", "Milk, juice box, fries: which one is not a drink?", ["1F35F"], ["1F95B", "1F9C3"]],
+
+  ["transport-train", "transport", "relation", "train-rails", "想沿着铁轨去远方，应该找哪个？", "Which one should you choose to travel along railway tracks?", ["1F682"], ["1F697", "1F68C", "1F6B2", "1F681"]],
+  ["transport-bike", "transport", "dual", "bike-clues", "哪个有两个轮子，而且要踩脚踏板前进？", "Which one has two wheels and moves when you pedal?", ["1F6B2"], ["1F3CD", "1F6F4", "1F697", "1F68C"]],
+  ["transport-bike-2", "transport", "dual", "bike-clues", "不用发动机，踩脚踏板让两个轮子前进，选哪个？", "Which two-wheeled vehicle moves by pedaling instead of using an engine?", ["1F6B2"], ["1F3CD", "1F6F4", "1F697", "1F68C"]],
+  ["transport-tractor", "transport", "scene", "tractor-farm", "在农田里干活、拉农具，最常看到哪种车？", "Which vehicle is commonly used in fields to pull farm equipment?", ["1F69C"], ["1F69A", "1F697", "1F68C", "1F682"]],
+  ["transport-bus", "transport", "function", "bus-passengers", "很多人要一起坐车去学校或城市里，应该选哪个？", "Which vehicle is made to carry many people together around town or to school?", ["1F68C"], ["1F695", "1F697", "1F69A", "1F6B2"]],
+  ["transport-helicopter", "transport", "dual", "helicopter-clues", "哪个能飞，而且头顶有大大的旋转桨？", "Which one can fly and has a large spinning rotor on top?", ["1F681"], ["2708", "1F697", "1F6A2", "1FA81"]],
+  ["transport-taxi", "transport", "scene", "taxi-ride", "在路边招手，付钱请车送你去一个地方，常找哪个？", "Which vehicle do you often hail and pay for a ride to a place?", ["1F695"], ["1F697", "1F68C", "1F69A", "1F682"]],
+  ["transport-scooter", "transport", "dual", "scooter-clues", "哪个要站在窄窄的踏板上，还要两手扶着车把？", "Which one has you stand on a narrow deck while holding handlebars?", ["1F6F4"], ["1F6B2", "1F3CD", "1F697", "1F69C"]],
+  ["transport-motorcycle", "transport", "dual", "motorcycle-clues", "哪个有两个轮子，又有发动机，骑的时候要跨坐上去？", "Which one has two wheels and an engine and is ridden astride?", ["1F3CD"], ["1F6B2", "1F6F4", "1F697", "1F69C"]],
+
+  ["nature-rainbow", "nature", "cause", "rainbow-after-rain", "下过雨以后，天空里可能出现什么？", "What may appear in the sky after rain?", ["1F308"], ["2601", "2744", "1F30A", "1F319"]],
+  ["nature-rainbow-2", "nature", "cause", "rainbow-after-rain", "雨停以后抬头看，天空里可能有哪条七彩弧线？", "After the rain stops, which colorful arc might you see in the sky?", ["1F308"], ["2601", "2744", "1F30A", "1F319"]],
+  ["nature-sun", "nature", "cause", "sun-daylight", "白天变得亮亮的，天空里最重要的是哪个？", "Which one in the sky is most responsible for making daytime bright?", ["2600"], ["1F319", "2601", "1F308", "2744"]],
+  ["nature-moon", "nature", "scene", "moon-night", "晚上抬头看天空，哪个常常弯弯地发亮？", "Which one often looks curved and bright in the night sky?", ["1F319"], ["2600", "2601", "1F308", "2744"]],
+  ["nature-snowflake", "nature", "dual", "snowflake-clues", "天气很冷时，哪个会从天空落下，而且是冰晶？", "Which one can fall from the sky in cold weather and is made of ice crystals?", ["2744"], ["1F4A7", "2601", "1F308", "1F30A"]],
+  ["nature-volcano", "nature", "cause", "volcano-lava", "火山喷发时，岩浆会从哪个地方出来？", "Where does lava come out during an eruption?", ["1F30B"], ["1F333", "1F335", "2601", "1F30A"]],
+  ["nature-cactus", "nature", "dual", "cactus-clues", "哪个植物常住在干燥地方，身上还有很多刺？", "Which plant often lives in dry places and has lots of spines?", ["1F335"], ["1F333", "1F33C", "1F344", "1F966"]],
+  ["nature-cloud", "nature", "cause", "cloud-rain", "天空里聚成一团，还可能带来雨的是哪个？", "Which one gathers in the sky and may bring rain?", ["2601"], ["1F319", "1F308", "2744", "1F4A7"]],
+  ["nature-tree", "nature", "function", "tree-shade", "夏天太阳很晒，想找一大片树荫，应该靠近哪个？", "Which one would you go near for a large patch of shade on a sunny day?", ["1F333"], ["1F33C", "1F344", "1F335", "1F4A1"]],
+
+  ["home-bed", "home", "scene", "bed-sleep", "晚上要睡觉了，应该找哪个？", "Which one should you find when it is time to sleep at night?", ["1F6CF"], ["1FA91", "1F6C1", "1F3E0", "1F392"]],
+  ["home-key", "home", "function", "key-door", "想把门锁打开，哪个东西最有帮助？", "Which thing is most useful for unlocking a door?", ["1F511"], ["1F4A1", "1F392", "1F45F", "1F9E2"]],
+  ["home-key-2", "home", "function", "key-door", "门锁着了，拿哪个东西最容易把它打开？", "The door is locked. Which thing would most likely open it?", ["1F511"], ["1F4A1", "1F392", "1F45F", "1F9E2"]],
+  ["home-light", "home", "cause", "light-room", "房间黑黑的，想让它亮起来，要找哪个？", "Which one would help make a dark room bright?", ["1F4A1"], ["1F511", "1FA91", "1F6CF", "2600"]],
+  ["home-bathtub", "home", "scene", "bathtub-wash", "想装一大盆水，坐进去洗澡，应该找哪个？", "Which one can hold water so you can sit in it for a bath?", ["1F6C1"], ["1FA91", "1F6CF", "1F3E0", "1F392"]],
+  ["home-chair", "home", "function", "chair-sit", "吃饭时想坐下来，哪个最适合让人坐着？", "Which one is made for sitting down at mealtime?", ["1FA91"], ["1F6CF", "1F6C1", "1F392", "1F3E0"]],
+  ["home-shoe", "home", "dual", "shoe-feet", "哪个穿在脚上，还能保护脚走路？", "Which one is worn on your feet and protects them while walking?", ["1F45F"], ["1F455", "1F456", "1F9E2", "1F392"]],
+  ["home-house", "home", "relation", "house-key", "钥匙最常和什么地方一起用？", "Which place is a key most commonly used with?", ["1F3E0"], ["1FA91", "1F6CF", "1F6C1", "1F392"]],
+  ["home-not-clothes", "home", "exclusion", "home-exclusion", "T恤、牛仔裤、书包里，哪个不是穿在身上的衣服？", "T-shirt, jeans, backpack: which one is not clothing you wear?", ["1F392"], ["1F455", "1F456"]],
+
+  ["play-soccer", "play", "function", "soccer-kick", "想踢着玩，应该选哪种球？", "Which ball should you choose if you want to kick it around?", ["26BD"], ["1F3C0", "1F3BE", "1F9E9", "1FA80"]],
+  ["play-kite", "play", "cause", "kite-wind", "有风的时候，哪个玩具更容易飞起来？", "Which toy is easier to fly when the wind is blowing?", ["1FA81"], ["1FA80", "1F9F8", "1F9E9", "1F381"]],
+  ["play-kite-2", "play", "cause", "kite-wind", "风吹起来了，哪个玩具会借着风往天上飞？", "When the wind picks up, which toy can ride it up into the sky?", ["1FA81"], ["1FA80", "1F9F8", "1F9E9", "1F381"]],
+  ["play-drum", "play", "relation", "drum-sticks", "鼓棒应该去找哪个？", "Which instrument goes with drumsticks?", ["1F941"], ["1F3B8", "1F3B9", "1F3A4", "1F9E9"]],
+  ["play-gift", "play", "scene", "gift-birthday", "去参加生日会，想带一个包好准备送人的东西，选哪个？", "Which wrapped item would you take to give someone at a birthday party?", ["1F381"], ["1F9F8", "1FA80", "1F9E9", "1F3C0"]],
+  ["play-guitar", "play", "dual", "guitar-strings", "哪个乐器有琴弦，还常常抱在怀里弹？", "Which instrument has strings and is often held against you while playing?", ["1F3B8"], ["1F3B9", "1F941", "1F3A4", "1FA80"]],
+  ["play-piano", "play", "function", "piano-keys", "想用手指按一排黑白琴键，应该找哪个？", "Which one do you play by pressing rows of black and white keys?", ["1F3B9"], ["1F3B8", "1F941", "1F3A4", "1F9E9"]],
+  ["play-microphone", "play", "function", "microphone-sing", "唱歌时想把声音放大，最需要哪个？", "Which one helps make your voice louder when you sing?", ["1F3A4"], ["1F3B8", "1F3B9", "1F941", "1FA80"]],
+  ["play-not-ball", "play", "exclusion", "play-exclusion", "篮球、网球、拼图里，哪个不是球？", "Basketball, tennis ball, puzzle: which one is not a ball?", ["1F9E9"], ["1F3C0", "1F3BE"]],
+].map(([id, theme, type, concept, zh, en, answers, distractors]) => ({
+  id,
+  theme,
+  type,
+  concept,
+  labels: { zh, en },
+  answers,
+  distractors,
+}));
+
+// Reviewed, obviously unrelated options used only to make mixed mode cross theme boundaries.
+// Exclusion questions keep their exact named trio and do not use these extras.
+const GAME_MIXED_DISTRACTORS = {
+  animals: ["1F34E", "1FA91"],
+  ocean: ["1F34E", "1FA91"],
+  produce: ["1F436", "1FA91"],
+  food: ["1F436", "1FA91"],
+  transport: ["1F34E", "1F36A"],
+  nature: ["1F697", "1F355"],
+  home: ["1F34E", "1F355"],
+  play: ["1F34E", "1FA91"],
+};
 
 const GAME_PRAISE = [
   { zh: "找到了！", en: "You found it!" },
@@ -918,7 +824,10 @@ function prepareGamePools() {
   const questions = GAME_QUESTIONS.map((question) => ({
     ...question,
     answers: question.answers.map((hexcode) => byHexcode.get(hexcode)).filter(Boolean),
-    distractors: question.distractors
+    distractors: [...new Set([
+      ...question.distractors,
+      ...(question.type === "exclusion" ? [] : (GAME_MIXED_DISTRACTORS[question.theme] || [])),
+    ])]
       .filter((hexcode) => !question.answers.includes(hexcode))
       .map((hexcode) => byHexcode.get(hexcode)).filter(Boolean),
   })).filter((question) => question.answers.length && question.distractors.length >= 2);
@@ -1014,28 +923,79 @@ function gameQuestionLabels() {
   };
 }
 
+function gameValuesCanFollow(entries, previousValue, getValue) {
+  if (game.mode !== "think" || !entries.length) return true;
+  const counts = new Map();
+  entries.forEach((entry) => {
+    const value = getValue(entry);
+    counts.set(value, (counts.get(value) || 0) + 1);
+  });
+  const sameValueLimit = Math.floor(entries.length / 2);
+  const otherValueLimit = Math.ceil(entries.length / 2);
+  return Array.from(counts).every(([value, count]) => (
+    count <= (value === previousValue ? sameValueLimit : otherValueLimit)
+  ));
+}
+
+function takeNextGameEntry(pool) {
+  if (!game.deck.length) game.deck = shuffled(pool);
+
+  const previousAnswer = game.question?.hexcode;
+  const previousType = game.prompt?.type;
+  const previousConcept = game.prompt?.concept;
+  const answerRepeats = (entry) => game.mode === "think"
+    ? entry.answers.some((word) => word.hexcode === previousAnswer)
+    : entry.hexcode === previousAnswer;
+  const typeRepeats = (entry) => game.mode === "think" && entry.type === previousType;
+  const conceptRepeats = (entry) => game.mode === "think" && entry.concept === previousConcept;
+
+  let index = game.deck.findIndex((entry, entryIndex) => (
+    !answerRepeats(entry)
+    && !typeRepeats(entry)
+    && !conceptRepeats(entry)
+    && gameValuesCanFollow(
+      game.deck.filter((_, index) => index !== entryIndex),
+      entry.answers[0]?.hexcode,
+      (next) => next.answers[0]?.hexcode,
+    )
+    && gameValuesCanFollow(
+      game.deck.filter((_, index) => index !== entryIndex),
+      entry.type,
+      (next) => next.type,
+    )
+    && gameValuesCanFollow(
+      game.deck.filter((_, index) => index !== entryIndex),
+      entry.concept,
+      (next) => next.concept,
+    )
+  ));
+  if (index < 0) index = game.deck.findIndex((entry) => (
+    !answerRepeats(entry) && !typeRepeats(entry) && !conceptRepeats(entry)
+  ));
+  if (index < 0) index = game.deck.findIndex((entry) => !answerRepeats(entry) && !conceptRepeats(entry));
+  if (index < 0) index = game.deck.findIndex((entry) => !answerRepeats(entry));
+  if (index < 0) index = 0;
+  return game.deck.splice(index, 1)[0];
+}
+
 function nextGameQuestion() {
   if (!game.active || !gameThemeAvailable(game.theme)) return;
   const pool = game.mode === "think" ? game.questionPools[game.theme] : game.pools[game.theme];
   cancelGameActivity();
-  if (!game.deck.length) {
-    game.deck = shuffled(pool);
-    // Keep every entry in the round; a one-question fallback cannot avoid repeating.
-    const previous = game.prompt?.id || game.question?.hexcode;
-    const first = game.deck[0].id || game.deck[0].hexcode;
-    if (game.deck.length > 1 && first === previous) {
-      const other = 1 + Math.floor(Math.random() * (game.deck.length - 1));
-      [game.deck[0], game.deck[other]] = [game.deck[other], game.deck[0]];
-    }
-  }
-  const entry = game.deck.shift();
+  const entry = takeNextGameEntry(pool);
   game.prompt = game.mode === "think" ? entry : null;
   game.question = game.prompt ? shuffled(game.prompt.answers)[0] : entry;
-  // Prefer curated distractors from this topic, then use approved cross-topic ones.
-  const candidates = game.prompt ? [
-    ...shuffled(game.prompt.distractors.filter((word) => word.theme === game.prompt.theme)),
-    ...shuffled(game.prompt.distractors.filter((word) => word.theme !== game.prompt.theme)),
-  ] : shuffled(pool.filter((word) => word.hexcode !== game.question.hexcode));
+  const sameThemeDistractors = game.prompt
+    ? shuffled(game.prompt.distractors.filter((word) => word.theme === game.prompt.theme))
+    : [];
+  const crossThemeDistractors = game.prompt
+    ? shuffled(game.prompt.distractors.filter((word) => word.theme !== game.prompt.theme))
+    : [];
+  const candidates = game.prompt
+    ? (game.theme === "mixed"
+      ? [...crossThemeDistractors, ...sameThemeDistractors]
+      : [...sameThemeDistractors, ...crossThemeDistractors])
+    : shuffled(pool.filter((word) => word.hexcode !== game.question.hexcode));
   const distractors = candidates.slice(0, 2);
   game.options = shuffled([game.question, ...distractors]);
   game.mistakes = 0;
