@@ -894,6 +894,30 @@ function cancelGameActivity() {
   cancelSpeech();
 }
 
+function playGameFeedbackTone(isCorrect) {
+  const AudioContext = window.AudioContext || window.webkitAudioContext;
+  if (!AudioContext) return;
+  try {
+    const context = new AudioContext();
+    const oscillator = context.createOscillator();
+    const gain = context.createGain();
+    const now = context.currentTime;
+    oscillator.type = "sine";
+    oscillator.frequency.setValueAtTime(isCorrect ? 520 : 240, now);
+    oscillator.frequency.exponentialRampToValueAtTime(isCorrect ? 780 : 170, now + 0.16);
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(0.12, now + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.2);
+    oscillator.connect(gain);
+    gain.connect(context.destination);
+    oscillator.start(now);
+    oscillator.stop(now + 0.2);
+    oscillator.onended = () => context.close().catch(() => {});
+  } catch {
+    // Keep the game playable when Web Audio is unavailable.
+  }
+}
+
 function speakGame(labels, onComplete = () => {}) {
   const run = game.run;
   dom.gameSpeechNote.hidden = true;
@@ -940,14 +964,17 @@ function gameValuesCanFollow(entries, previousValue, getValue) {
 function takeNextGameEntry(pool) {
   if (!game.deck.length) game.deck = shuffled(pool);
 
+  if (game.mode !== "think") {
+    const index = game.deck.findIndex((entry) => entry.hexcode !== game.question?.hexcode);
+    return game.deck.splice(index >= 0 ? index : 0, 1)[0];
+  }
+
   const previousAnswer = game.question?.hexcode;
   const previousType = game.prompt?.type;
   const previousConcept = game.prompt?.concept;
-  const answerRepeats = (entry) => game.mode === "think"
-    ? entry.answers.some((word) => word.hexcode === previousAnswer)
-    : entry.hexcode === previousAnswer;
-  const typeRepeats = (entry) => game.mode === "think" && entry.type === previousType;
-  const conceptRepeats = (entry) => game.mode === "think" && entry.concept === previousConcept;
+  const answerRepeats = (entry) => entry.answers.some((word) => word.hexcode === previousAnswer);
+  const typeRepeats = (entry) => entry.type === previousType;
+  const conceptRepeats = (entry) => entry.concept === previousConcept;
 
   let index = game.deck.findIndex((entry, entryIndex) => (
     !answerRepeats(entry)
@@ -1100,13 +1127,19 @@ function answerGame(hexcode) {
   if (!game.active || game.locked || !game.options.some((word) => word.hexcode === hexcode)) return;
   if (hexcode !== game.question.hexcode) {
     game.mistakes += 1;
-    const retry = { zh: "再找找", en: "Try again!" };
+    const selected = game.options.find((word) => word.hexcode === hexcode);
+    const retry = { zh: "再想想", en: "Try again!" };
+    const spokenRetry = {
+      zh: `再想想。你选的是${selected.labels.zh}。`,
+      en: `Try again. You chose ${selected.labels.en}.`,
+    };
     game.feedback = retry;
     renderGameFeedback();
     if (game.mistakes === 2) {
       dom.gameOptions.querySelector(`[data-game-hexcode="${game.question.hexcode}"]`).classList.add("is-hint");
     }
-    speakGame(retry);
+    playGameFeedbackTone(false);
+    speakGame(spokenRetry);
     return;
   }
 
@@ -1123,6 +1156,7 @@ function answerGame(hexcode) {
   const praise = GAME_PRAISE[game.praiseIndex++ % GAME_PRAISE.length];
   game.feedback = praise;
   renderGameFeedback();
+  playGameFeedbackTone(true);
   continueGameAfterSpeech((done) => speakGame(praise, done));
 }
 
